@@ -13,10 +13,13 @@ public class MemberController extends Controller {
 	private List<Member> members;
 	private String command;
 	private String actionMethodName;
-	public Member logonMember = null;
+	public Member logonMember;
+	public int lastId;
 
 	public MemberController(Scanner sc) {
 		this.sc = sc;
+		this.lastId = 0;
+		this.logonMember = null;
 		members = new ArrayList<>();
 	}
 
@@ -51,7 +54,7 @@ public class MemberController extends Controller {
 	}
 
 	private void doJoin() {
-		int id = members.size() + 1;
+		int id = ++lastId;
 		String regDate = Util.getCurrentDate();
 
 		String loginId = null;
@@ -213,9 +216,9 @@ public class MemberController extends Controller {
 
 	public void makeTestData() {
 		System.out.printf("테스트를 위한 계정을 생성합니다.\n");
-		members.add(new Member(1, Util.getCurrentDate(), "admin", "admin", "관리자"));
-		members.add(new Member(2, Util.getCurrentDate(), "test1", "1234", "testId1"));
-		members.add(new Member(3, Util.getCurrentDate(), "test2", "1234", "testId2"));
-		members.add(new Member(4, Util.getCurrentDate(), "test3", "1234", "testId3"));
+		members.add(new Member(0, Util.getCurrentDate(), "test1", "1234", "testId1"));
+		members.add(new Member(0, Util.getCurrentDate(), "test2", "1234", "testId2"));
+		members.add(new Member(0, Util.getCurrentDate(), "test3", "1234", "testId3"));
+		members.add(new Member(0, Util.getCurrentDate(), "admin", "admin", "관리자"));
 	}
 }
