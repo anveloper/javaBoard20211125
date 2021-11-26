@@ -129,14 +129,13 @@ public class ArticleController extends Controller {
 			System.out.printf("게시글 번호를 입력하지 않았습니다.\n");
 			return;
 		}
-
+		
 		int id = Integer.parseInt(commandBits[2]);
 		int foundIndex = getArticleIndexById(id); 
 		if (foundIndex == -1) {
 			System.out.printf("%d번 게시물이 존재하지 않습니다\n", id);
 			return;
 		}
-
 		if (isWriter(foundIndex)) {
 			System.out.println("작성자만 삭제할 수 있습니다.");
 			return;
