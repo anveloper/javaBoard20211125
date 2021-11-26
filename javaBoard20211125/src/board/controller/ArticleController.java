@@ -131,7 +131,7 @@ public class ArticleController extends Controller {
 		}
 
 		int id = Integer.parseInt(commandBits[2]);
-		int foundIndex = getArticleIndexById(id);
+		int foundIndex = getArticleIndexById(id); 
 		if (foundIndex == -1) {
 			System.out.printf("%d번 게시물이 존재하지 않습니다\n", id);
 			return;
@@ -141,9 +141,8 @@ public class ArticleController extends Controller {
 			System.out.println("작성자만 삭제할 수 있습니다.");
 			return;
 		}
-
-
-		articles.remove(foundIndex);
+// index가 아니고 article로 삭제 가능함. ↑ 현재 함수 내에서 article로 불러와도 됨.
+		articles.remove(foundIndex); 
 		System.out.printf("%d번 게시물이 삭제되었습니다.\n", id);
 	}
 
@@ -156,8 +155,8 @@ public class ArticleController extends Controller {
 		}
 
 		int id = Integer.parseInt(commandBits[2]);
-		Article targetArticle = getArticleById(id);
-		if (targetArticle == null) {
+		Article foundArticle = getArticleById(id);
+		if (foundArticle == null) {
 			System.out.printf("%d번 게시물이 존재하지 않습니다\n", id);
 			return;
 		}
@@ -170,8 +169,8 @@ public class ArticleController extends Controller {
 		System.out.printf("내용 : ");
 		String body = sc.nextLine();
 
-		targetArticle.title = title;
-		targetArticle.body = body;
+		foundArticle.title = title;
+		foundArticle.body = body;
 
 		System.out.printf("%d번 게시물이 수정되었습니다.\n", id);
 	}
