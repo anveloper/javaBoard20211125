@@ -167,10 +167,10 @@ public class MemberController extends Controller {
 			}
 		}
 		System.out.printf(" * 등록된 회원 목록 * \n");
-		System.out.println("번호	| 날짜		| 회원ID	| 회원명 ");
+		System.out.println("번호	| 날짜		| 회원ID		| 회원명 ");
 		for (int i = 0; i < forListMember.size(); i++) {
 			Member currentMember = forListMember.get(i);
-			System.out.printf("%d	| %s	| %s		| %s \n", currentMember.id, currentMember.regDate,
+			System.out.printf("%d	| %s	| %-21s | %s \n", currentMember.id, currentMember.regDate,
 					currentMember.loginId, currentMember.name);
 		}
 	}

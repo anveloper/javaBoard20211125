@@ -12,7 +12,7 @@ public class ArticleController extends Controller {
 	private Scanner sc;
 	private List<Article> articles;
 	private String command;
-	private String actionMethodName;
+	private String actionMethodName = "";
 	public Member logonMember;
 	int lastId;
 
@@ -73,10 +73,10 @@ public class ArticleController extends Controller {
 			}
 		}
 		System.out.printf("=== 게시물 목록 ===\n");
-		System.out.println("번호	| 날짜		| 제목					| 작성자	  | 조회수");
+		System.out.println("번호	| 날짜		| 제목				     | 작성자	          | 조회수");
 		for (int i = forListArticle.size() - 1; i >= 0; i--) {
 			Article currentArticle = forListArticle.get(i);
-			System.out.printf("%d	| %s	| %s				| %s	  | %d\n", currentArticle.id,
+			System.out.printf("%d	| %s	| %-29s | %-10s	  | %d\n", currentArticle.id,
 					currentArticle.regDate, currentArticle.title, currentArticle.writer, currentArticle.hit);
 		}
 	}
@@ -116,9 +116,9 @@ public class ArticleController extends Controller {
 		targetArticle.increaseHit();
 		System.out.printf("번호		: %d\n", targetArticle.id);
 		System.out.printf("작성일		: %s\n", targetArticle.regDate);
+		System.out.printf("작성자		: %s\n", targetArticle.writer);
 		System.out.printf("제목		: %s\n", targetArticle.title);
 		System.out.printf("내용-----------------------------*\n| %s\n| \n| \n", targetArticle.body);
-		System.out.printf("작성자		: %s\n", targetArticle.writer);
 		System.out.printf("조회수		: %d\n", targetArticle.hit);
 	}
 
@@ -203,9 +203,9 @@ public class ArticleController extends Controller {
 
 	public void makeTestData() {
 		System.out.println("테스트를 위한 게시물을 생성합니다.");
-		articles.add(new Article(0, Util.getCurrentDate(), "테스트 제목1", "내용1", 0, "테스트1", 11));
-		articles.add(new Article(0, Util.getCurrentDate(), "테스트 제목2", "내용2", 0, "테스트2", 22));
-		articles.add(new Article(0, Util.getCurrentDate(), "테스트 제목3", "내용3", 0, "테스트3", 33));
+		articles.add(new Article(0, Util.getCurrentDate(), "테스트 제목11", "내용1", 0, "test1", 11));
+		articles.add(new Article(0, Util.getCurrentDate(), "테스트 제목22", "내용2", 0, "test2", 22));
+		articles.add(new Article(0, Util.getCurrentDate(), "테스트 제목32", "내용3", 0, "test3", 33));
 	}
 
 }
