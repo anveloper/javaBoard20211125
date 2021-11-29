@@ -27,7 +27,11 @@ public class MemberController extends Controller {
 		this.command = command;
 		
 		switch (actionMethodName) {
-		case "join":
+		case "join":			
+			if(isLogon() == false) {
+				System.out.printf("로그아웃 후 이용가능합니다.\n");
+				return;
+			}
 			doJoin();
 			break;
 		case "login":
@@ -50,6 +54,7 @@ public class MemberController extends Controller {
 
 	public void doAction(String command, String actionMethodName, Member logonMember) {
 		this.command = command;
+//		this.logonMember = logonMember; // 굳이 필요 없을 수도.. login은 member의 기능이기 때문에
 		this.doAction(command, actionMethodName); // article과 다르게 멤버 정보가 있으니 따로 명령문을 만들필요가 없을듯?
 	}
 
@@ -86,7 +91,7 @@ public class MemberController extends Controller {
 		members.add(member);
 		System.out.printf("%d번 회원등록이 완료되었습니다.\n", id);
 	}
-
+	
 	private void doLogin() {
 		String loginId = null;
 		Member currentMember = null;
@@ -97,7 +102,7 @@ public class MemberController extends Controller {
 		while (true) {
 			System.out.printf("로그인 ID : ");
 			loginId = sc.nextLine();
-
+			
 			if (isLoginId(loginId) == -1) {
 				System.out.printf("%s(은)는 없는 아이디 입니다.\n", loginId);
 				return;
@@ -120,7 +125,7 @@ public class MemberController extends Controller {
 		System.out.printf("%s님 환영합니다.\n", currentMember.name);
 		logonMember = currentMember;
 	}
-
+	
 	private void doLogout() {
 		if (!isLogon()) {
 			System.out.printf("로그아웃 상태입니다.\n");
@@ -129,7 +134,7 @@ public class MemberController extends Controller {
 		System.out.printf("%s가 로그아웃 되었습니다.\n", logonMember.loginId);
 		this.logonMember = null;
 	}
-
+	
 	private void checkId() {
 		if (this.logonMember == null) {
 			System.out.printf("로그아웃 상태입니다.\n");
@@ -174,12 +179,14 @@ public class MemberController extends Controller {
 					currentMember.loginId, currentMember.name);
 		}
 	}
+	
+
 
 // ==================================================================================================================	
 
-	private boolean isLogon() {
-		return logonMember != null;
-	}
+//	private boolean isLogon() {
+//		return logonMember != null;
+//	}  // 상위 클래스에 정의됨.
 
 	private boolean isAdmin() {
 		return (logonMember == null) || (logonMember.id != members.get(0).id);

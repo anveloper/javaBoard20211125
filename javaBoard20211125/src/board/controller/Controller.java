@@ -11,7 +11,7 @@ public abstract class Controller {
 	
 	public static Member logonMember = null;
 	
-	private static boolean isLogon() {
+	protected static boolean isLogon() {
 		return logonMember != null;
 	}
 }

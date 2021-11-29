@@ -37,10 +37,21 @@ public class ArticleController extends Controller {
 			doWrite();
 			break;
 		case "modify":
+			if(isLogon() != false) {
+				System.out.printf("로그인 후 이용가능합니다.\n");
+				return;
+			}
 			doModify();
 			break;
 		case "delete":
+			if(isLogon() != false) {
+				System.out.printf("로그인 후 이용가능합니다.\n");
+				return;
+			}
 			doDelete();
+			break;
+		default:
+			System.out.printf("존재하지 않는 명령어 입니다.\n");
 			break;
 		}
 	}
