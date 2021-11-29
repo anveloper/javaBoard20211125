@@ -12,42 +12,37 @@ public class ArticleController extends Controller {
 	private Scanner sc;
 	private List<Article> articles;
 	private String command;
-	private String actionMethodName = "";
+	private String actionMethodName;
 	public Member logonMember;
 	int lastId;
 
 	public ArticleController(Scanner sc) {
 		this.sc = sc;
 		this.lastId = 0;
+		this.logonMember = null;
 		articles = new ArrayList<>();
 
 	}
 
 	public void doAction(String command, String actionMethodName) {
 		this.command = command;
-
+		
 		switch (actionMethodName) {
+		case "write":
+			doWrite();
+			break;
 		case "list":
 			showList();
 			break;
 		case "detail":
 			showDetail();
 			break;
-		case "write":
-			doWrite();
-			break;
 		case "modify":
-			if(isLogon() != false) {
-				System.out.printf("로그인 후 이용가능합니다.\n");
-				return;
-			}
+
 			doModify();
 			break;
 		case "delete":
-			if(isLogon() != false) {
-				System.out.printf("로그인 후 이용가능합니다.\n");
-				return;
-			}
+
 			doDelete();
 			break;
 		default:
@@ -62,6 +57,24 @@ public class ArticleController extends Controller {
 		this.doAction(command, actionMethodName);
 	}
 
+	private void doWrite() {
+		int id = ++lastId;
+		String currentDate = Util.getCurrentDate();
+		System.out.printf("제목 : ");
+		String title = sc.nextLine();
+		System.out.printf("내용 : ");
+		String body = sc.nextLine();
+		int writerId = 0; // 비회원의 게시글은 관리자만 삭제/수정가능, 관리자 id가 0번임
+		String writer = "비회원"; 
+		if (logonMember != null) {
+			writerId = logonMember.id; // null값이 아닌 logonMember 라면(로그인 되어있다면), 그 id로 변경
+			writer = logonMember.loginId; // 작성자 이름 또한 logon 아이디로 변경
+		}
+		Article article = new Article(id, currentDate, title, body, writerId, writer);
+		articles.add(article);
+		System.out.printf("%d번 게시물 등록이 완료되었습니다.\n", id);
+	}
+	
 	private void showList() {
 		if (articles.size() == 0) {
 			System.out.printf("게시물이 없습니다.\n");
@@ -87,27 +100,9 @@ public class ArticleController extends Controller {
 		System.out.println("번호	| 날짜		| 제목				     | 작성자	          | 조회수");
 		for (int i = forListArticle.size() - 1; i >= 0; i--) {
 			Article currentArticle = forListArticle.get(i);
-			System.out.printf("%d	| %s	| %-29s | %-10s	  | %d\n", currentArticle.id,
-					currentArticle.regDate, currentArticle.title, currentArticle.writer, currentArticle.hit);
+			System.out.printf("%d	| %s	| %-29s | %-10s	  | %d\n", currentArticle.id, currentArticle.regDate,
+					currentArticle.title, currentArticle.writer, currentArticle.hit);
 		}
-	}
-
-	private void doWrite() {
-		int id = ++lastId;
-		String currentDate = Util.getCurrentDate();
-		System.out.printf("제목 : ");
-		String title = sc.nextLine();
-		System.out.printf("내용 : ");
-		String body = sc.nextLine();
-		int writerId = 0;
-		String writer = "비회원";
-		if (logonMember != null) {
-			writerId = logonMember.id;
-			writer = logonMember.loginId;
-		}
-		Article article = new Article(id, currentDate, title, body, writerId, writer);
-		articles.add(article);
-		System.out.printf("%d번 게시물 등록이 완료되었습니다.\n", id);
 	}
 
 	private void showDetail() {
@@ -140,19 +135,19 @@ public class ArticleController extends Controller {
 			System.out.printf("게시글 번호를 입력하지 않았습니다.\n");
 			return;
 		}
-		
+
 		int id = Integer.parseInt(commandBits[2]);
-		int foundIndex = getArticleIndexById(id); 
-		if (foundIndex == -1) {
+		Article foundArticle = getArticleById(id);
+		if (foundArticle == null) {
 			System.out.printf("%d번 게시물이 존재하지 않습니다\n", id);
 			return;
 		}
-		if (isWriter(foundIndex)) {
+		if (isWriter(foundArticle.id)) {
 			System.out.println("작성자만 삭제할 수 있습니다.");
 			return;
 		}
 // index가 아니고 article로 삭제 가능함. ↑ 현재 함수 내에서 article로 불러와도 됨.
-		articles.remove(foundIndex); 
+		articles.remove(foundArticle);
 		System.out.printf("%d번 게시물이 삭제되었습니다.\n", id);
 	}
 

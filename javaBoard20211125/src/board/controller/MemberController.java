@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import board.dto.Article;
 import board.dto.Member;
 import board.util.Util;
 
@@ -25,10 +24,10 @@ public class MemberController extends Controller {
 
 	public void doAction(String command, String actionMethodName) {
 		this.command = command;
-		
+
 		switch (actionMethodName) {
-		case "join":			
-			if(isLogon() == false) {
+		case "join":
+			if (isLogon() == false) {
 				System.out.printf("로그아웃 후 이용가능합니다.\n");
 				return;
 			}
@@ -91,7 +90,7 @@ public class MemberController extends Controller {
 		members.add(member);
 		System.out.printf("%d번 회원등록이 완료되었습니다.\n", id);
 	}
-	
+
 	private void doLogin() {
 		String loginId = null;
 		Member currentMember = null;
@@ -102,7 +101,7 @@ public class MemberController extends Controller {
 		while (true) {
 			System.out.printf("로그인 ID : ");
 			loginId = sc.nextLine();
-			
+
 			if (isLoginId(loginId) == -1) {
 				System.out.printf("%s(은)는 없는 아이디 입니다.\n", loginId);
 				return;
@@ -125,7 +124,7 @@ public class MemberController extends Controller {
 		System.out.printf("%s님 환영합니다.\n", currentMember.name);
 		logonMember = currentMember;
 	}
-	
+
 	private void doLogout() {
 		if (!isLogon()) {
 			System.out.printf("로그아웃 상태입니다.\n");
@@ -134,7 +133,7 @@ public class MemberController extends Controller {
 		System.out.printf("%s가 로그아웃 되었습니다.\n", logonMember.loginId);
 		this.logonMember = null;
 	}
-	
+
 	private void checkId() {
 		if (this.logonMember == null) {
 			System.out.printf("로그아웃 상태입니다.\n");
@@ -179,8 +178,6 @@ public class MemberController extends Controller {
 					currentMember.loginId, currentMember.name);
 		}
 	}
-	
-
 
 // ==================================================================================================================	
 
@@ -192,7 +189,6 @@ public class MemberController extends Controller {
 		return (logonMember == null) || (logonMember.id != members.get(0).id);
 	}
 
-	
 	private int isLoginId(String loginId) {
 		int index = getMemberIndexByLoginId(loginId);
 		if (index == -1) {
