@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import board.container.Container;
 import board.dto.Article;
 import board.dto.Member;
 import board.util.Util;
@@ -20,13 +21,13 @@ public class ArticleController extends Controller {
 		this.sc = sc;
 		this.lastId = 0;
 		this.logonMember = null;
-		articles = new ArrayList<>();
+		articles = Container.articleDao.articles;
 
 	}
 
 	public void doAction(String command, String actionMethodName) {
 		this.command = command;
-		
+
 		switch (actionMethodName) {
 		case "write":
 			doWrite();
@@ -38,7 +39,6 @@ public class ArticleController extends Controller {
 			showDetail();
 			break;
 		case "modify":
-
 			doModify();
 			break;
 		case "delete":
@@ -65,7 +65,7 @@ public class ArticleController extends Controller {
 		System.out.printf("내용 : ");
 		String body = sc.nextLine();
 		int writerId = 0; // 비회원의 게시글은 관리자만 삭제/수정가능, 관리자 id가 0번임
-		String writer = "비회원"; 
+		String writer = "비회원";
 		if (logonMember != null) {
 			writerId = logonMember.id; // null값이 아닌 logonMember 라면(로그인 되어있다면), 그 id로 변경
 			writer = logonMember.loginId; // 작성자 이름 또한 logon 아이디로 변경
@@ -74,7 +74,7 @@ public class ArticleController extends Controller {
 		articles.add(article);
 		System.out.printf("%d번 게시물 등록이 완료되었습니다.\n", id);
 	}
-	
+
 	private void showList() {
 		if (articles.size() == 0) {
 			System.out.printf("게시물이 없습니다.\n");
@@ -100,8 +100,16 @@ public class ArticleController extends Controller {
 		System.out.println("번호	| 날짜		| 제목				     | 작성자	          | 조회수");
 		for (int i = forListArticle.size() - 1; i >= 0; i--) {
 			Article currentArticle = forListArticle.get(i);
+			String writerName = null;
+			List<Member> members = Container.memberDao.members;
+			for (Member member : members) {
+				if(currentArticle.writerId == member.id) {
+					writerName = member.name;
+					break;
+				}
+			} // DAO로 구성한 container를 통해 members의 회원정보를 불러와서 writer이름에 담는다.
 			System.out.printf("%d	| %s	| %-29s | %-10s	  | %d\n", currentArticle.id, currentArticle.regDate,
-					currentArticle.title, currentArticle.writer, currentArticle.hit);
+					currentArticle.title, writerName, currentArticle.hit);
 		}
 	}
 

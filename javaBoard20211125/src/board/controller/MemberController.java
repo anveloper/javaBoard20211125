@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import board.container.Container;
 import board.dto.Member;
 import board.util.Util;
 
@@ -19,7 +20,7 @@ public class MemberController extends Controller {
 		this.sc = sc;
 		this.lastId = 0;
 		this.logonMember = null;
-		members = new ArrayList<>();
+		members = Container.memberDao.members;
 	}
 
 	public void doAction(String command, String actionMethodName) {

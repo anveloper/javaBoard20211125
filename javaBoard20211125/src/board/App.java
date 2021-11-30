@@ -35,9 +35,11 @@ public class App {
 			}
 
 			command.trim();
+			
 			if (command.length() == 0) {
 				continue;
 			} // 입력된 명령어의 앞뒤 여백 제거
+			
 			String[] commandBits = command.split(" ");
 
 			if (commandBits.length == 1) {
@@ -61,14 +63,15 @@ public class App {
 
 			this.logonMember = memberController.logonMember;
 
-			String actionName = controller + "/" + actionMethodName;
+			String actionName = controllerName + "/" + actionMethodName;
 
 			switch (actionName) {
 			case "article/delete":
 			case "article/modify":
 			case "member/logout":
+				System.out.printf("%b",Controller.isLogon());
 				if (Controller.isLogon() == false) {
-					System.out.printf("로그인 후 이용해주세요...!\n");
+					System.out.printf("로그인 후 이용해주세요.\n");
 					continue;
 				}
 				break;
@@ -77,7 +80,7 @@ public class App {
 			case "member/login":
 			case "member/join":
 				if (Controller.isLogon()) {
-					System.out.printf("로그아웃 후 이용해주세요...!\n");
+					System.out.printf("로그아웃 후 이용해주세요.\n");
 					continue;
 				}
 				break;
