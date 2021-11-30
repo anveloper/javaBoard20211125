@@ -2,13 +2,13 @@ package board;
 
 import java.util.Scanner;
 
+import board.container.Container;
 import board.controller.ArticleController;
 import board.controller.Controller;
 import board.controller.MemberController;
 import board.dto.Member;
 
 public class App {
-	public Member logonMember = null;
 
 	public void start() {
 		// 메인 함수에서 기능을 받은 app함수는 명령어 처리만 실시하고, 세부 행동은 controller에게 이양한다.
@@ -35,11 +35,11 @@ public class App {
 			}
 
 			command.trim();
-			
+
 			if (command.length() == 0) {
 				continue;
 			} // 입력된 명령어의 앞뒤 여백 제거
-			
+
 			String[] commandBits = command.split(" ");
 
 			if (commandBits.length == 1) {
@@ -60,16 +60,13 @@ public class App {
 				System.out.printf("존재하지 않는 명령어입니다.\n");
 				continue;
 			} // controller 이름 조건문
-
-			this.logonMember = memberController.logonMember;
-
+			
 			String actionName = controllerName + "/" + actionMethodName;
 
 			switch (actionName) {
 			case "article/delete":
 			case "article/modify":
 			case "member/logout":
-				System.out.printf("%b",Controller.isLogon());
 				if (Controller.isLogon() == false) {
 					System.out.printf("로그인 후 이용해주세요.\n");
 					continue;
@@ -86,10 +83,10 @@ public class App {
 				break;
 			}
 
-			if (logonMember == null) { // 비회원 기능을 별도로 작동
+			if (Controller.isLogon() == false) { // 비회원 기능을 별도로 작동
 				controller.doAction(command, actionMethodName);
 			} else { // 회원이 로그인 되었을때, controller에 회원 정보를 입력함.
-				controller.doAction(command, actionMethodName, logonMember);
+				controller.doAction(command, actionMethodName, Controller.logonMember);
 			}
 
 		}

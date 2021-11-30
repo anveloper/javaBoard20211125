@@ -3,6 +3,7 @@ package board.controller;
 import board.dto.Member;
 
 public abstract class Controller {
+	
 	public static Member logonMember;
 
 	public abstract void doAction(String command, String actionMethodName);

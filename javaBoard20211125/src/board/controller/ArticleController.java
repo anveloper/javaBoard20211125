@@ -14,13 +14,11 @@ public class ArticleController extends Controller {
 	private List<Article> articles;
 	private String command;
 	private String actionMethodName;
-	public Member logonMember;
 	int lastId;
 
 	public ArticleController(Scanner sc) {
 		this.sc = sc;
 		this.lastId = 0;
-		this.logonMember = null;
 		articles = Container.articleDao.articles;
 
 	}
@@ -42,7 +40,6 @@ public class ArticleController extends Controller {
 			doModify();
 			break;
 		case "delete":
-
 			doDelete();
 			break;
 		default:
@@ -100,16 +97,16 @@ public class ArticleController extends Controller {
 		System.out.println("번호	| 날짜		| 제목				     | 작성자	          | 조회수");
 		for (int i = forListArticle.size() - 1; i >= 0; i--) {
 			Article currentArticle = forListArticle.get(i);
-			String writerName = null;
-			List<Member> members = Container.memberDao.members;
-			for (Member member : members) {
-				if(currentArticle.writerId == member.id) {
-					writerName = member.name;
-					break;
-				}
-			} // DAO로 구성한 container를 통해 members의 회원정보를 불러와서 writer이름에 담는다.
+//			String writerName = null;
+//			List<Member> members = Container.memberDao.members;
+//			for (Member member : members) {
+//				if(currentArticle.writerId == member.id) {
+//					writerName = member.name;
+//					break;
+//				} // 내 구성에는 맞지 않음. << 차후에 id값이랑 비교하는거 다시 보기
+//			} // DAO로 구성한 container를 통해 members의 회원정보를 불러와서 writer이름에 담는다.
 			System.out.printf("%d	| %s	| %-29s | %-10s	  | %d\n", currentArticle.id, currentArticle.regDate,
-					currentArticle.title, writerName, currentArticle.hit);
+					currentArticle.title, currentArticle.writerId, currentArticle.hit);
 		}
 	}
 

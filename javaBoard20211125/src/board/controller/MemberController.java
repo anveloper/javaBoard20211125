@@ -13,13 +13,11 @@ public class MemberController extends Controller {
 	private List<Member> members;
 	private String command;
 	private String actionMethodName;
-	public Member logonMember;
 	public int lastId;
 
 	public MemberController(Scanner sc) {
 		this.sc = sc;
 		this.lastId = 0;
-		this.logonMember = null;
 		members = Container.memberDao.members;
 	}
 
@@ -54,7 +52,6 @@ public class MemberController extends Controller {
 
 	public void doAction(String command, String actionMethodName, Member logonMember) {
 		this.command = command;
-//		this.logonMember = logonMember; // 굳이 필요 없을 수도.. login은 member의 기능이기 때문에
 		this.doAction(command, actionMethodName); // article과 다르게 멤버 정보가 있으니 따로 명령문을 만들필요가 없을듯?
 	}
 
