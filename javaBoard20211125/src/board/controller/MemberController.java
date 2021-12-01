@@ -56,7 +56,7 @@ public class MemberController extends Controller {
 	}
 
 	private void doJoin() {
-		int id = ++lastId;
+		int id = Container.memberDao.getNewId();
 		String regDate = Util.getCurrentDate();
 
 		String loginId = null;
@@ -85,7 +85,8 @@ public class MemberController extends Controller {
 		System.out.printf("이름 : ");
 		String name = sc.nextLine();
 		Member member = new Member(id, regDate, loginId, loginPw, name);
-		members.add(member);
+		Container.memberDao.add(member);
+		
 		System.out.printf("%d번 회원등록이 완료되었습니다.\n", id);
 	}
 
@@ -217,9 +218,9 @@ public class MemberController extends Controller {
 
 	public void makeTestData() {
 		System.out.printf("테스트를 위한 계정을 생성합니다.\n");
-		members.add(new Member(0, Util.getCurrentDate(), "test1", "1234", "testId1"));
-		members.add(new Member(0, Util.getCurrentDate(), "test2", "1234", "testId2"));
-		members.add(new Member(0, Util.getCurrentDate(), "test3", "1234", "testId3"));
-		members.add(new Member(0, Util.getCurrentDate(), "admin", "admin", "관리자"));
+		Container.memberDao.add(new Member(Container.memberDao.getNewId(), Util.getCurrentDate(), "test1", "1234", "testId1"));
+		Container.memberDao.add(new Member(Container.memberDao.getNewId(), Util.getCurrentDate(), "test2", "1234", "testId2"));
+		Container.memberDao.add(new Member(Container.memberDao.getNewId(), Util.getCurrentDate(), "test3", "1234", "testId3"));
+		Container.memberDao.add(new Member(0, Util.getCurrentDate(), "admin", "admin", "관리자"));
 	}
 }

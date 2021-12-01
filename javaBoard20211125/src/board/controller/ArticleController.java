@@ -14,11 +14,9 @@ public class ArticleController extends Controller {
 	private List<Article> articles;
 	private String command;
 	private String actionMethodName;
-	int lastId;
 
 	public ArticleController(Scanner sc) {
 		this.sc = sc;
-		this.lastId = 0;
 		articles = Container.articleDao.articles;
 
 	}
@@ -55,7 +53,7 @@ public class ArticleController extends Controller {
 	}
 
 	private void doWrite() {
-		int id = ++lastId;
+		int id = Container.articleDao.getNewId();
 		String currentDate = Util.getCurrentDate();
 		System.out.printf("제목 : ");
 		String title = sc.nextLine();
@@ -68,7 +66,9 @@ public class ArticleController extends Controller {
 			writer = logonMember.loginId; // 작성자 이름 또한 logon 아이디로 변경
 		}
 		Article article = new Article(id, currentDate, title, body, writerId, writer);
-		articles.add(article);
+		
+		Container.articleDao.add(article);
+		
 		System.out.printf("%d번 게시물 등록이 완료되었습니다.\n", id);
 	}
 
@@ -106,7 +106,7 @@ public class ArticleController extends Controller {
 //				} // 내 구성에는 맞지 않음. << 차후에 id값이랑 비교하는거 다시 보기
 //			} // DAO로 구성한 container를 통해 members의 회원정보를 불러와서 writer이름에 담는다.
 			System.out.printf("%d	| %s	| %-29s | %-10s	  | %d\n", currentArticle.id, currentArticle.regDate,
-					currentArticle.title, currentArticle.writerId, currentArticle.hit);
+					currentArticle.title, currentArticle.writerName, currentArticle.hit);
 		}
 	}
 
@@ -127,7 +127,7 @@ public class ArticleController extends Controller {
 		targetArticle.increaseHit();
 		System.out.printf("번호		: %d\n", targetArticle.id);
 		System.out.printf("작성일		: %s\n", targetArticle.regDate);
-		System.out.printf("작성자		: %s\n", targetArticle.writer);
+		System.out.printf("작성자		: %s\n", targetArticle.writerName);
 		System.out.printf("제목		: %s\n", targetArticle.title);
 		System.out.printf("내용-----------------------------*\n| %s\n| \n| \n", targetArticle.body);
 		System.out.printf("조회수		: %d\n", targetArticle.hit);
@@ -212,9 +212,9 @@ public class ArticleController extends Controller {
 
 	public void makeTestData() {
 		System.out.println("테스트를 위한 게시물을 생성합니다.");
-		articles.add(new Article(0, Util.getCurrentDate(), "테스트 제목11", "내용1", 0, "test1", 11));
-		articles.add(new Article(0, Util.getCurrentDate(), "테스트 제목22", "내용2", 0, "test2", 22));
-		articles.add(new Article(0, Util.getCurrentDate(), "테스트 제목32", "내용3", 0, "test3", 33));
+		Container.articleDao.add(new Article(Container.articleDao.getNewId(), Util.getCurrentDate(), "테스트 제목11", "내용1", 1, "test1", 1));
+		Container.articleDao.add(new Article(Container.articleDao.getNewId(), Util.getCurrentDate(), "테스트 제목22", "내용2", 2, "test2", 2));
+		Container.articleDao.add(new Article(Container.articleDao.getNewId(), Util.getCurrentDate(), "테스트 제목32", "내용3", 3, "test3", 3));
 	}
 
 }
