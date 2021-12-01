@@ -144,7 +144,7 @@ public class MemberController extends Controller {
 	}
 
 	private void showList() {
-		if (isAdmin()) {
+		if (!isAdmin()) {
 			System.out.printf(" * member list 기능은 관리자로 로그인 하셔야 이용할 수 있습니다.\n");
 			return;
 		}
@@ -185,7 +185,7 @@ public class MemberController extends Controller {
 //	}  // 상위 클래스에 정의됨.
 
 	private boolean isAdmin() {
-		return (logonMember == null) || (logonMember.id != members.get(0).id);
+		return logonMember.id == 0;
 	}
 
 	private int isLoginId(String loginId) {
@@ -218,9 +218,9 @@ public class MemberController extends Controller {
 
 	public void makeTestData() {
 		System.out.printf("테스트를 위한 계정을 생성합니다.\n");
+		Container.memberDao.add(new Member(0, Util.getCurrentDate(), "admin", "admin", "관리자"));
 		Container.memberDao.add(new Member(Container.memberDao.getNewId(), Util.getCurrentDate(), "test1", "1234", "testId1"));
 		Container.memberDao.add(new Member(Container.memberDao.getNewId(), Util.getCurrentDate(), "test2", "1234", "testId2"));
 		Container.memberDao.add(new Member(Container.memberDao.getNewId(), Util.getCurrentDate(), "test3", "1234", "testId3"));
-		Container.memberDao.add(new Member(0, Util.getCurrentDate(), "admin", "admin", "관리자"));
 	}
 }
