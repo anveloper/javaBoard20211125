@@ -60,12 +60,12 @@ public class ArticleController extends Controller {
 		System.out.printf("내용 : ");
 		String body = sc.nextLine();
 		int writerId = 0; // 비회원의 게시글은 관리자만 삭제/수정가능, 관리자 id가 0번임
-		String writer = "비회원";
+		String writerName = "비회원";
 		if (logonMember != null) {
 			writerId = logonMember.id; // null값이 아닌 logonMember 라면(로그인 되어있다면), 그 id로 변경
-			writer = logonMember.loginId; // 작성자 이름 또한 logon 아이디로 변경
+			writerName = logonMember.loginId; // 작성자 이름 또한 logon 아이디로 변경
 		}
-		Article article = new Article(id, currentDate, title, body, writerId, writer);
+		Article article = new Article(id, currentDate, title, body, writerId, writerName);
 		
 		Container.articleDao.add(article);
 		

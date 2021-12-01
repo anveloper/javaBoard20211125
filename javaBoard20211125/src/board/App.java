@@ -32,11 +32,11 @@ public class App {
 				continue;
 			}
 
-			command.trim();
+			command.trim();  // 입력된 명령어의 앞뒤 여백 제거
 
 			if (command.length() == 0) {
 				continue;
-			} // 입력된 명령어의 앞뒤 여백 제거
+			}
 
 			String[] commandBits = command.split(" ");
 
