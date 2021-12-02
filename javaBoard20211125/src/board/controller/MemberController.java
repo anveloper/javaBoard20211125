@@ -26,10 +26,6 @@ public class MemberController extends Controller {
 
 		switch (actionMethodName) {
 		case "join":
-			if (isLogon() == false) {
-				System.out.printf("로그아웃 후 이용가능합니다.\n");
-				return;
-			}
 			doJoin();
 			break;
 		case "login":
@@ -144,7 +140,7 @@ public class MemberController extends Controller {
 	}
 
 	private void showList() {
-		if (!isAdmin()) {
+		if (isAdmin() == false) {
 			System.out.printf(" * member list 기능은 관리자로 로그인 하셔야 이용할 수 있습니다.\n");
 			return;
 		}
@@ -180,12 +176,9 @@ public class MemberController extends Controller {
 
 // ==================================================================================================================	
 
-//	private boolean isLogon() {
-//		return logonMember != null;
-//	}  // 상위 클래스에 정의됨.
-
 	private boolean isAdmin() {
-		return logonMember.id == 0;
+		if (Controller.logonMember == null) return false;
+		return Controller.logonMember.id == 0;
 	}
 
 	private int isLoginId(String loginId) {

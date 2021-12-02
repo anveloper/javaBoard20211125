@@ -22,12 +22,12 @@ public class App {
 			System.out.print("명령어(* help) : ");
 			String command = sc.nextLine();
 
-			if (command.equals("system exit")) {
+			if (command.equals("system exit")||command.equals("exit")) {
 				System.out.println("프로그램을 종료합니다.");
 				break;
 			} // 종료 기능 추가
 
-			if (command.equals("help")) {
+			if (command.equals("system help")||command.equals("help")) {
 				showHelp();
 				continue;
 			}
@@ -94,8 +94,8 @@ public class App {
 
 	private void showHelp() {
 		System.out.printf("** 도움말 **\n");
-		System.out.printf("* help				: 도움말\n");
-		System.out.printf("* system exit			: 프로그램 종료\n");
+		System.out.printf("* system help(= help)		: 도움말\n");
+		System.out.printf("* system exit(= exit)		: 프로그램 종료\n");
 		System.out.printf("* article	--		: 게시글 기능\n");
 		System.out.printf("		write		: 게시글 작성\n");
 		System.out.printf("				  * 비회원은 작성만 가능, 관리자로 삭제/수정 가능\n");
