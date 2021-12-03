@@ -33,7 +33,7 @@ public class ArticleService {
 	public int getNewId() {
 		return articleDao.getNewId();
 	}
-	public void add(Article article) {
+	public void write(Article article) {
 		articleDao.add(article);
 	}
 }

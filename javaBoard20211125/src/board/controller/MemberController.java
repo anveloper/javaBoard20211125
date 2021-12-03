@@ -41,6 +41,12 @@ public class MemberController extends Controller {
 		case "list":
 			showList();
 			break;
+//		case "modify":
+//			doModify();
+//			break;
+//		case "delete":
+//			doDelete();
+//			break;
 		default:
 			System.out.printf("존재하지 않는 명령어 입니다.\n");
 			break;
@@ -49,7 +55,7 @@ public class MemberController extends Controller {
 
 	public void doAction(String command, String actionMethodName, Member logonMember) {
 		this.command = command;
-		this.doAction(command, actionMethodName); // article과 다르게 멤버 정보가 있으니 따로 명령문을 만들필요가 없을듯?
+		this.doAction(command, actionMethodName);
 	}
 
 	private void doJoin() {
@@ -83,7 +89,7 @@ public class MemberController extends Controller {
 		String name = sc.nextLine();
 		
 		Member member = new Member(id, regDate, loginId, loginPw, name);
-		Container.memberDao.add(member);
+		memberService.join(member);
 		
 		System.out.printf("%d번 회원등록이 완료되었습니다.\n", id);
 	}
@@ -167,9 +173,9 @@ public class MemberController extends Controller {
 
 	public void makeTestData() {
 		System.out.printf("테스트를 위한 계정을 생성합니다.\n");
-		Container.memberDao.add(new Member(0, Util.getCurrentDate(), "admin", "admin", "관리자"));
-		Container.memberDao.add(new Member(Container.memberDao.getNewId(), Util.getCurrentDate(), "test1", "1234", "testId1"));
-		Container.memberDao.add(new Member(Container.memberDao.getNewId(), Util.getCurrentDate(), "test2", "1234", "testId2"));
-		Container.memberDao.add(new Member(Container.memberDao.getNewId(), Util.getCurrentDate(), "test3", "1234", "testId3"));
+		memberService.add(new Member(0, Util.getCurrentDate(), "admin", "admin", "관리자"));
+		memberService.add(new Member(memberService.getNewId(), Util.getCurrentDate(), "test1", "1234", "testId1"));
+		memberService.add(new Member(memberService.getNewId(), Util.getCurrentDate(), "test2", "1234", "testId2"));
+		memberService.add(new Member(memberService.getNewId(), Util.getCurrentDate(), "test3", "1234", "testId3"));
 	}
 }

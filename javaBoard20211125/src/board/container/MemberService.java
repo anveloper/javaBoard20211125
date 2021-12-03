@@ -43,6 +43,14 @@ public class MemberService {
 	public Member getMemberByLoginId(int loginIndex) {
 		return memberDao.getMemberByLoginId(loginIndex);
 	}
+
+	public void add(Member member) {
+		memberDao.add(member);
+	}
+
+	public void join(Member member) {
+		memberDao.add(member);
+	}
 	
 	
 

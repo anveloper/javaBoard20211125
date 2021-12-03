@@ -66,7 +66,7 @@ public class ArticleController extends Controller {
 		}
 		Article article = new Article(id, currentDate, title, body, writerId, writerName);
 		
-		articleService.add(article);
+		articleService.write(article);
 		
 		System.out.printf("* %d번 게시물 등록이 완료되었습니다.\n", id);
 	}
