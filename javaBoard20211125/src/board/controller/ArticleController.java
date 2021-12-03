@@ -52,7 +52,7 @@ public class ArticleController extends Controller {
 	}
 
 	private void doWrite() {
-		int id = Container.articleDao.getNewId();
+		int id = articleService.getNewId();
 		String currentDate = Util.getCurrentDate();
 		System.out.printf("제목 : ");
 		String title = sc.nextLine();
@@ -66,19 +66,20 @@ public class ArticleController extends Controller {
 		}
 		Article article = new Article(id, currentDate, title, body, writerId, writerName);
 		
-		Container.articleDao.add(article);
+		articleService.add(article);
 		
 		System.out.printf("* %d번 게시물 등록이 완료되었습니다.\n", id);
 	}
 
 	private void showList() {
-		if (Container.articleDao.articles.size() == 0) {
+		if (articleService.getArticlesSize() == 0) {
 			System.out.printf("* 게시물이 없습니다.\n");
 			return;
 		}
 		String searchKeyword = command.substring("article list".length()).trim();
 		
 		List<Article> forPrintArticles = articleService.getForPtintArticles(searchKeyword);
+		
 		if(forPrintArticles == null) {
 			System.out.printf("* 검색된 게시글이 없습니다.\n");
 			return;
@@ -177,9 +178,9 @@ public class ArticleController extends Controller {
 
 	public void makeTestData() {
 		System.out.println("테스트를 위한 게시물을 생성합니다.");
-		Container.articleDao.add(new Article(Container.articleDao.getNewId(), Util.getCurrentDate(), "테스트 제목11", "내용1", 1, "test1", 1));
-		Container.articleDao.add(new Article(Container.articleDao.getNewId(), Util.getCurrentDate(), "테스트 제목22", "내용2", 2, "test2", 2));
-		Container.articleDao.add(new Article(Container.articleDao.getNewId(), Util.getCurrentDate(), "테스트 제목32", "내용3", 3, "test3", 3));
+		Container.articleDao.add(new Article(articleService.getNewId(), Util.getCurrentDate(), "테스트 제목11", "내용1", 1, "test1", 1));
+		Container.articleDao.add(new Article(articleService.getNewId(), Util.getCurrentDate(), "테스트 제목22", "내용2", 2, "test2", 2));
+		Container.articleDao.add(new Article(articleService.getNewId(), Util.getCurrentDate(), "테스트 제목32", "내용3", 3, "test3", 3));
 	}
 
 }

@@ -27,4 +27,13 @@ public class ArticleService {
 	public boolean isWriter(int id) {
 		return articleDao.isWriter(id);
 	}
+	public int getArticlesSize() {
+		return articleDao.getArticlesSize();
+	}
+	public int getNewId() {
+		return articleDao.getNewId();
+	}
+	public void add(Article article) {
+		articleDao.add(article);
+	}
 }

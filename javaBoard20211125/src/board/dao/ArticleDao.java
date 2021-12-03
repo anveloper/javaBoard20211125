@@ -61,4 +61,7 @@ public class ArticleDao extends Dao {
 	public void remove(Article foundArticle) {
 		articles.remove(foundArticle);
 	}
+	public int getArticlesSize() {
+		return articles.size();
+	}
 }

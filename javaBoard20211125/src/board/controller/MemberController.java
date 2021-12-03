@@ -5,20 +5,21 @@ import java.util.List;
 import java.util.Scanner;
 
 import board.container.Container;
+import board.container.MemberService;
 import board.dto.Member;
 import board.util.Util;
 
 public class MemberController extends Controller {
 	private Scanner sc;
-	private List<Member> members;
 	private String command;
 	private String actionMethodName;
+	private MemberService memberService;
 	public int lastId;
 
 	public MemberController(Scanner sc) {
 		this.sc = sc;
 		this.lastId = 0;
-		members = Container.memberDao.members;
+		this.memberService = Container.memberService;
 	}
 
 	public void doAction(String command, String actionMethodName) {
@@ -52,7 +53,7 @@ public class MemberController extends Controller {
 	}
 
 	private void doJoin() {
-		int id = Container.memberDao.getNewId();
+		int id = memberService.getNewId();
 		String regDate = Util.getCurrentDate();
 
 		String loginId = null;
@@ -60,7 +61,7 @@ public class MemberController extends Controller {
 			System.out.printf("가입 ID : ");
 			loginId = sc.nextLine();
 
-			if (isJoinableLoginId(loginId) == false) {
+			if (memberService.isJoinableLoginId(loginId) == false) {
 				System.out.printf("%s(은)는 이미 사용중이인 아이디 입니다.\n", loginId);
 				continue;
 			}
@@ -80,6 +81,7 @@ public class MemberController extends Controller {
 		}
 		System.out.printf("이름 : ");
 		String name = sc.nextLine();
+		
 		Member member = new Member(id, regDate, loginId, loginPw, name);
 		Container.memberDao.add(member);
 		
@@ -97,13 +99,13 @@ public class MemberController extends Controller {
 			System.out.printf("로그인 ID : ");
 			loginId = sc.nextLine();
 
-			if (isLoginId(loginId) == -1) {
+			if (memberService.isLoginId(loginId) == -1) {
 				System.out.printf("%s(은)는 없는 아이디 입니다.\n", loginId);
 				return;
 			}
-			int loginIndex = isLoginId(loginId);
+			int loginIndex = memberService.isLoginId(loginId);
 			System.out.printf("%s(으)로 로그인 합니다.\n", loginId);
-			currentMember = members.get(loginIndex);
+			currentMember = memberService.getMemberByLoginId(loginIndex);
 			break;
 		}
 		String loginPw = null;
@@ -140,31 +142,18 @@ public class MemberController extends Controller {
 	}
 
 	private void showList() {
-		if (isAdmin() == false) {
+		if (memberService.isAdmin() == false) {
 			System.out.printf(" * member list 기능은 관리자로 로그인 하셔야 이용할 수 있습니다.\n");
 			return;
 		}
 
-		if (members.size() == 0) {
+		if (memberService.getMemberSize() == 0) {
 			System.out.printf("등록된 회원이 없습니다.\n");
 			return;
 		}
-		List<Member> forListMember = members;
 		String searchKeyword = command.substring("member list".length()).trim();
-		if (searchKeyword.length() > 0) {
-			System.out.printf("검색어 : %s\n", searchKeyword);
-			forListMember = new ArrayList<>();
+		List<Member> forListMember = memberService.getMemberForPrint(searchKeyword);
 
-			for (Member member : members) {
-				if (member.loginId.contains(searchKeyword)) {
-					forListMember.add(member);
-				}
-			}
-			if (forListMember.size() == 0) {
-				System.out.printf("검색된 게시글이 없습니다.\n");
-				return;
-			}
-		}
 		System.out.printf(" * 등록된 회원 목록 * \n");
 		System.out.println("번호	| 날짜		| 회원ID		| 회원명 ");
 		for (int i = 0; i < forListMember.size(); i++) {
@@ -175,39 +164,6 @@ public class MemberController extends Controller {
 	}
 
 // ==================================================================================================================	
-
-	private boolean isAdmin() {
-		if (Controller.logonMember == null) return false;
-		return Controller.logonMember.id == 0;
-	}
-
-	private int isLoginId(String loginId) {
-		int index = getMemberIndexByLoginId(loginId);
-		if (index == -1) {
-			return -1;
-		}
-		return index;
-	}
-
-	private int getMemberIndexByLoginId(String loginId) {
-		int i = 0;
-
-		for (Member member : members) {
-			if (member.loginId.equals(loginId)) {
-				return i;
-			}
-			i++;
-		}
-		return -1;
-	}
-
-	private boolean isJoinableLoginId(String loginId) {
-		int index = getMemberIndexByLoginId(loginId);
-		if (index == -1) {
-			return true;
-		}
-		return false;
-	}
 
 	public void makeTestData() {
 		System.out.printf("테스트를 위한 계정을 생성합니다.\n");
