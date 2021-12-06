@@ -79,4 +79,13 @@ public class MemberDao extends Dao {
 	public Member getMemberByLoginId(int loginIndex) {
 		return members.get(loginIndex);
 	}
+
+	public String getMemberNameId(int memberId) {
+		for (Member member : members) {
+			if(member.id == memberId) {
+				return member.loginId;
+			}
+		}
+		return "";
+	}
 }

@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import board.controller.ArticleController;
 import board.controller.Controller;
+import board.controller.ExportController;
 import board.controller.MemberController;
 
 public class App {
@@ -14,9 +15,11 @@ public class App {
 		Scanner sc = new Scanner(System.in);
 		MemberController memberController = new MemberController(sc);
 		ArticleController articleController = new ArticleController(sc);
+		ExportController exportController = new ExportController(sc);
 
 		articleController.makeTestData();
 		memberController.makeTestData();
+		exportController.makeTestData();
 
 		while (true) {
 			System.out.print("명령어(* help) : ");
@@ -54,6 +57,8 @@ public class App {
 				controller = articleController;
 			} else if (controllerName.equals("member")) {
 				controller = memberController;
+			} else if (controllerName.equals("export")) {
+				controller = exportController;
 			} else {
 				System.out.printf("존재하지 않는 명령어입니다.\n");
 				continue;

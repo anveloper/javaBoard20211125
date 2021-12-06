@@ -3,7 +3,7 @@ package board.controller;
 import java.util.List;
 import java.util.Scanner;
 
-import board.container.ArticleService;
+import board.Service.ArticleService;
 import board.container.Container;
 import board.dto.Article;
 import board.dto.Member;
@@ -78,7 +78,7 @@ public class ArticleController extends Controller {
 		}
 		String searchKeyword = command.substring("article list".length()).trim();
 		
-		List<Article> forPrintArticles = articleService.getForPtintArticles(searchKeyword);
+		List<Article> forPrintArticles = articleService.getForPrintArticles(searchKeyword);
 		
 		if(forPrintArticles == null) {
 			System.out.printf("* 검색된 게시글이 없습니다.\n");

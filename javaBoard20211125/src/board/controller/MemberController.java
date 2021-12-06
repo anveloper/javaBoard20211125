@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import board.Service.MemberService;
 import board.container.Container;
-import board.container.MemberService;
 import board.dto.Member;
 import board.util.Util;
 

@@ -1,7 +1,8 @@
-package board.container;
+package board.Service;
 
 import java.util.List;
 
+import board.container.Container;
 import board.dao.MemberDao;
 import board.dto.Member;
 
@@ -51,7 +52,4 @@ public class MemberService {
 	public void join(Member member) {
 		memberDao.add(member);
 	}
-	
-	
-
 }

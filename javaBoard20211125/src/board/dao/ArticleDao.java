@@ -64,4 +64,7 @@ public class ArticleDao extends Dao {
 	public int getArticlesSize() {
 		return articles.size();
 	}
+	public List<Article> getforPrintArticles() {
+		return null;
+	}
 }
