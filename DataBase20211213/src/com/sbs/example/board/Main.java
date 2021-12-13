@@ -1,16 +1,15 @@
 package com.sbs.example.board;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
 
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
-
-		List<Article> articles = new ArrayList<>();
-		int lastArticleId = 0;
 
 		while (true) {
 			System.out.printf("* 명령어 : ");
@@ -23,7 +22,7 @@ public class Main {
 			}
 
 			if (cmd.equals("article write")) {
-				int id = ++lastArticleId;
+
 				String title;
 				String body;
 				System.out.printf("* 게시글 작성 \n");
@@ -31,20 +30,45 @@ public class Main {
 				title = sc.nextLine();
 				System.out.printf("* 내용 : ");
 				body = sc.nextLine();
-				Article article = new Article(id, title, body);
+				//======================================================================
+				Connection conn = null; // DB 접속 객체
+				PreparedStatement pstat = null; // SQL구문을 실행하는 역할
+				try {
+					Class.forName("com.mysql.cj.jdbc.Driver");
+					String url = "jdbc:mysql://127.0.0.1:3306/text_board?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul&useOldAliasMetadataBehavior=true&zeroDateTimeNehavior=convertToNull";
 
-				articles.add(article);
-				System.out.printf("* %d번 게시글이 추가되었습니다.\n", id);
-			} else if (cmd.equals("article list")) {
-				System.out.printf("* 게시글 목록\n");
-				if (articles.size() == 0) {
-					System.out.printf("* 게시글이 존재하지 않습니다.\n");
-					continue;
+					conn = DriverManager.getConnection(url, "root", "");
+					String sql = "INSERT INTO article";
+					sql += " SET regDate = NOW()";
+					sql += ", updateDate = NOW()";
+					sql += ", title = \"" + title + "\"";
+					sql += ", `body` = \"" + body + "\"";
+					pstat = conn.prepareStatement(sql);
+					int affectedRows = pstat.executeUpdate();
+					System.out.printf("affectedRows : %d\n", affectedRows);
+				} catch (ClassNotFoundException e) {
+					System.out.println("드라이버 로딩 실패");
+				} catch (SQLException e) {
+					System.out.println("에러: " + e);
+				} finally { // 예외 상황이든 아니든 무조건 마지막에 실행하는 finally
+					try {
+						if (conn != null && !conn.isClosed()) {
+							conn.close(); // 연결 종료
+						}
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+
+					try {
+						if (pstat != null && !pstat.isClosed()) {
+							pstat.close(); // 연결 종료
+						}
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
 				}
-				System.out.printf("번호	| 제목		|\n");
-				for (Article article : articles) {
-					System.out.printf("%d	| %-20s		|\n", article.id, article.title);
-				}
+				//======================================================================
+				System.out.printf("* 게시글이 추가되었습니다.\n");
 			} else {
 				System.out.printf("* 잘못된 명령어입니다.\n");
 			}
