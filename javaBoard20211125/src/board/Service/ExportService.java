@@ -36,5 +36,4 @@ public class ExportService {
 			Util.writeFileContents("exportHtml/" + fileName, html);
 		}
 	}
-
 }
