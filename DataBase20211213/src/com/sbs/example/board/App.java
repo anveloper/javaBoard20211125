@@ -102,7 +102,7 @@ public class App {
 						article.updateDate, article.title, article.body);
 			}
 
-		} else if(cmd.startsWith("article deteail")) {
+		} else if(cmd.startsWith("article detail")) {
 			int id = Integer.parseInt(cmd.split(" ")[2].trim());
 
 			SecSql sql = new SecSql();
@@ -128,7 +128,7 @@ public class App {
 			Article article = new Article(articleMap);
 			System.out.printf("* 게시글 상세보기\n");
 			System.out.printf("* 게시글 번호 : %d\n", article.id);
-			System.out.printf("* 등록일자 : %d		갱신일자 : %d\n",);
+			System.out.printf("* 등록일자 : %s		갱신일자 : %s\n", article.regDate, article.updateDate);
 			
 			
 		} else if (cmd.startsWith("article modify")) {
