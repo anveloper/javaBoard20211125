@@ -2,19 +2,20 @@ package com.sbs.example.board;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+
+import com.sbs.example.board.util.DBUtil;
+import com.sbs.example.board.util.SecSql;
 
 public class App {
 	public void run() {
 		Scanner sc = new Scanner(System.in);
 
 		Connection conn = null;
-		PreparedStatement pstat = null;
 
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
@@ -22,44 +23,36 @@ public class App {
 
 			conn = DriverManager.getConnection(url, "root", "");
 
+			while (true) {
+				System.out.printf("* 명령어 : ");
+				String cmd = sc.nextLine();
+				cmd = cmd.trim();
+
+				if (cmd.equals("system exit")) {
+					System.out.printf("* 시스템을 종료합니다.\n");
+					break;
+				}
+
+				int actionResult = doAction(conn, sc, cmd);
+				if (actionResult == -1) break;
+			}
 		} catch (ClassNotFoundException e) {
 			System.out.printf("* 드라이버 로딩 실패\n");
 		} catch (SQLException e) {
 			System.out.println("* 에러 : " + e);
-		}
-
-		while (true) {
-			System.out.printf("* 명령어 : ");
-			String cmd = sc.nextLine();
-			cmd = cmd.trim();
-
-			if (cmd.equals("system exit")) {
-				System.out.printf("* 시스템을 종료합니다.\n");
-				break;
+		} finally {
+			try {
+				if (conn != null && !conn.isClosed()) {
+					conn.close(); // 연결 종료
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
-
-			doAction(conn, pstat, sc, cmd);
 		}
-
 		sc.close();
-
-		try {
-			if (conn != null && !conn.isClosed()) {
-				conn.close(); // 연결 종료
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		try {
-			if (pstat != null && !pstat.isClosed()) {
-				pstat.close(); // 연결 종료
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 	}
 
-	private int doAction(Connection conn, PreparedStatement pstat, Scanner sc, String cmd) {
+	private int doAction(Connection conn,Scanner sc, String cmd) {
 		if (cmd.equals("article write")) {
 
 			String title;
@@ -70,53 +63,45 @@ public class App {
 			System.out.printf("* 내용 : ");
 			body = sc.nextLine();
 
-			try {
-				String sql = "INSERT INTO article";
-				sql += " SET regDate = NOW()";
-				sql += ", updateDate = NOW()";
-				sql += ", title = \"" + title + "\"";
-				sql += ", `body` = \"" + body + "\"";
-				pstat = conn.prepareStatement(sql);
-				int affectedRows = pstat.executeUpdate();
-				System.out.printf("affectedRows : %d\n", affectedRows);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			System.out.printf("* 게시글이 추가되었습니다.\n");
+			SecSql sql = new SecSql();
+
+			sql.append("INSERT INTO article");
+			sql.append("SET regDate = NOW()");
+			sql.append(", updateDate = NOW()");
+			sql.append(", title = ?", title);
+			sql.append(", body = ?", body);
+
+			int id = DBUtil.insert(conn, sql);
+
+			System.out.printf("* %d번 게시글이 추가되었습니다.\n", id);
+			
 		} else if (cmd.equals("article list")) {
 			System.out.printf("* 게시글 목록\n");
 			List<Article> articles = new ArrayList<>();
-			ResultSet rs = null;
 
-			try {
-				String sql = "SELECT * FROM article";
-				sql += " ORDER BY id DESC";
+			SecSql sql = new SecSql();
+			
+			sql.append("SELECT * FROM article");
+			sql.append("ORDER BY id DESC");
 
-				pstat = conn.prepareStatement(sql);
-				rs = pstat.executeQuery(sql);
-				System.out.printf("");
-				while (rs.next()) {
-					int id = rs.getInt("id");
-					String regDate = rs.getString("regDate");
-					String updateDate = rs.getString("updateDate");
-					String title = rs.getString("title");
-					String body = rs.getString("body");
-					Article article = new Article(id, regDate, updateDate, title, body);
-					articles.add(article);
-				}
-				if (articles.size() == 0) {
-					System.out.printf("* 표시할 게시글이 없습니다.\n");
-					return 0;
-				}
-				System.out.printf("번호	| 등록날짜		| 수정날짜		| 제목			| 내용\n");
-				System.out.println("================================================================================================");
-				for (Article article : articles) {
-					System.out.printf("%d	| %s	| %s	| %-14s	| %s	\n", article.id, article.regDate,
-							article.updateDate, article.title, article.body);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
+			List<Map<String, Object>> articleListMap = DBUtil.selectRows(conn, sql);
+			for (Map<String, Object> articleMap : articleListMap) {
+				articles.add(new Article(articleMap));
 			}
+			
+			if (articles.size() == 0) {
+				System.out.printf("* 표시할 게시글이 없습니다.\n");
+				return 0;
+			}
+
+			System.out.printf("번호	| 등록날짜		| 수정날짜		| 제목			| 내용\n");
+			System.out.println(
+					"================================================================================================");
+			for (Article article : articles) {
+				System.out.printf("%d	| %s	| %s	| %-14s	| %s	\n", article.id, article.regDate,
+						article.updateDate, article.title, article.body);
+			}
+
 		} else if (cmd.startsWith("article modify")) {
 			int id = Integer.parseInt(cmd.split(" ")[2].trim());
 
@@ -129,24 +114,34 @@ public class App {
 			System.out.printf("* 새 내용 : ");
 			body = sc.nextLine();
 
-			try {
-				String sql = "UPDATE article";
-				sql += " SET regDate = NOW()";
-				sql += ", updateDate = NOW()";
-				sql += ", title = \"" + title + "\"";
-				sql += ", `body` = \"" + body + "\"";
-				sql += " WHERE id =" + id;
-				pstat = conn.prepareStatement(sql);
-				pstat.executeUpdate();
+			SecSql sql = new SecSql();
 
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			System.out.printf("* 게시글이 수정되었습니다.\n");
+			sql.append("UPDATE article");
+			sql.append("SET regDate = NOW()");
+			sql.append(", updateDate = NOW()");
+			sql.append(", title = ?", title);
+			sql.append(", body = ?", body);
+			sql.append("WHERE id = ?", id);
+			
+			DBUtil.update(conn, sql);
+
+			System.out.printf("* %d번 게시글이 수정되었습니다.\n", id);
+			
+		} else if (cmd.startsWith("article delete")) {
+			int id = Integer.parseInt(cmd.split(" ")[2].trim());
+			
+			SecSql sql = new SecSql();
+
+			sql.append("DELETE FROM article");
+			sql.append("WHERE id = ?", id);
+			
+			DBUtil.delete(conn, sql);
+			
+			System.out.printf("* %d번 게시글이 삭제되었습니다.\n", id);
+			
 		} else {
 			System.out.printf("* 잘못된 명령어입니다.\n");
 		}
-
 		return 0;
 	}
 }
