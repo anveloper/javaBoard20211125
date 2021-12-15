@@ -102,8 +102,52 @@ public class App {
 						article.updateDate, article.title, article.body);
 			}
 
+		} else if(cmd.startsWith("article deteail")) {
+			int id = Integer.parseInt(cmd.split(" ")[2].trim());
+
+			SecSql sql = new SecSql();
+			
+			sql.append("SELECT COUNT(*)");
+			sql.append("FROM article");
+			sql.append("WHERE id = ?", id);
+			
+			int articleCount = DBUtil.selectRowIntValue(conn, sql);
+			
+			if(articleCount == 0) {
+				System.out.printf("* %d번 게시글이 존재하지 않습니다.\n", id);
+				return 0;
+			}
+			
+			sql = new SecSql();
+			
+			sql.append("SELECT *");
+			sql.append("FROM article");
+			sql.append("WHERE id = ?", id);
+			
+			Map<String, Object> articleMap = DBUtil.selectRow(conn, sql);
+			Article article = new Article(articleMap);
+			System.out.printf("* 게시글 상세보기\n");
+			System.out.printf("* 게시글 번호 : %d\n", article.id);
+			System.out.printf("* 등록일자 : %d		갱신일자 : %d\n",);
+			
+			
 		} else if (cmd.startsWith("article modify")) {
 			int id = Integer.parseInt(cmd.split(" ")[2].trim());
+
+			SecSql sql = new SecSql();
+			
+			sql.append("SELECT COUNT(*)");
+			sql.append("FROM article");
+			sql.append("WHERE id = ?", id);
+			
+			int articleCount = DBUtil.selectRowIntValue(conn, sql);
+			
+			if(articleCount == 0) {
+				System.out.printf("* %d번 게시글이 존재하지 않습니다.\n", id);
+				return 0;
+			}
+			
+			sql = new SecSql();
 
 			String title;
 			String body;
@@ -113,8 +157,6 @@ public class App {
 			title = sc.nextLine();
 			System.out.printf("* 새 내용 : ");
 			body = sc.nextLine();
-
-			SecSql sql = new SecSql();
 
 			sql.append("UPDATE article");
 			sql.append("SET regDate = NOW()");
@@ -131,7 +173,20 @@ public class App {
 			int id = Integer.parseInt(cmd.split(" ")[2].trim());
 			
 			SecSql sql = new SecSql();
-
+			
+			sql.append("SELECT COUNT(*)");
+			sql.append("FROM article");
+			sql.append("WHERE id = ?", id);
+			
+			int articleCount = DBUtil.selectRowIntValue(conn, sql);
+			
+			if(articleCount == 0) {
+				System.out.printf("* %d번 게시글이 존재하지 않습니다.\n", id);
+				return 0;
+			}
+			
+			sql = new SecSql();
+			
 			sql.append("DELETE FROM article");
 			sql.append("WHERE id = ?", id);
 			
