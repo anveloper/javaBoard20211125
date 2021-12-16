@@ -14,3 +14,19 @@ CREATE TABLE article (
 );
 
 DESC article;
+SELECT * FROM article;
+SELECT * FROM article WHERE id = 4;
+DELETE FROM article
+WHERE id > 1;
+
+CREATE TABLE `member`(
+    id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY(id),
+    reDate DATETIME NOT NULL,
+    updateDate DATETIME NOT NULL,
+    loginId CHAR(100) NOT NULL,
+    loginPw CHAR(100) NOT NULL,
+    `name` CHAR(100) NOT NULL
+);
+
+DESC `member`;
