@@ -63,6 +63,7 @@ public class App {
 			System.out.printf("* 회원가입 \n");
 			
 			int joinTry = 0;
+			
 			while (true) {
 				if(joinTry > 2) {
 					System.out.printf("* 회원가입을 다시 시도해 주세요.\n");
