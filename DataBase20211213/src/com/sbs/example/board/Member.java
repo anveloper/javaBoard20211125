@@ -10,7 +10,7 @@ public class Member {
 	public String loginId;
 	public String loginPw;
 	public String name;
-	
+
 	public Member(Map<String, Object> foundMemberMap) {
 		this.id = (int) foundMemberMap.get("id");
 		this.regDate = (LocalDateTime) foundMemberMap.get("regDate");
@@ -19,5 +19,5 @@ public class Member {
 		this.loginPw = (String) foundMemberMap.get("loginPw");
 		this.name = (String) foundMemberMap.get("name");
 	}
-	
+
 }
