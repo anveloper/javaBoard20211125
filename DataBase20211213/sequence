@@ -1,0 +1,40 @@
+게시판 기능 만들기
+ - article write 명령을 받아서 게시글을 추가하기
+   * 게시글의 고유번호,등록 날짜, 수정 날짜, 제목, 내용 필요
+   * id, regDate, updateDate, title, `body`
+   * 추후에 hits기능 추가 
+ - SQL에 연동을 위한 코드
+========================================================================================= 
+ Connection conn = null; // DB 접속 객체
+    try {
+        Class.forName("com.mysql.cj.jdbc.Driver"); // Mysql JDBC 드라이버 로딩
+        String url = "jdbc:mysql://127.0.0.1:3306/text_board?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul&useOldAliasMetadataBehavior=true&zeroDateTimeNehavior=convertToNull";
+        // 연결 문자열 생성 => jdbc:mysql://네트워크 주소:포트 번호/연결 DB명?옵션1&옵션2&옵션3...
+        conn = DriverManager.getConnection(url, "sbsst", "sbs123414"); 
+        // Mysql JDBC 드라이버 연결 메소드 => (연결 문자열, 데이터베이스 ID, 데이터베이스 PASSWORD)
+        // Connection 객체를 반환 => 앞으로 conn을 이용해서 쿼리문을 실행할 예정입니다.
+    } catch (ClassNotFoundException e) {
+        System.out.println("드라이버 로딩 실패");
+    } catch (SQLException e) {
+        System.out.println("에러: " + e);
+    } finally { // 예외 상황이든 아니든 무조건 마지막에 실행하는 finally
+        try {
+            if (conn != null && !conn.isClosed()) {
+                conn.close(); // 연결 종료
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+=========================================================================================
+
+ - SQL에 접근하여 article table에서 정보를 연동한다.
+
+ - update, delete 기능 추가하기
+   * SQL 명령문을 통해 쿼리를 구현
+
+사용자 회원가입, 로그인 기능 추가
+ - article과 마찬가지로 CRUD는 비슷하게 구현 가능하나, 
+ - loginId의 고유값을 유지하거나, Pw를 비교하여 로그인 가능하게 하는 조건문이 필요함. 
+ 
+    

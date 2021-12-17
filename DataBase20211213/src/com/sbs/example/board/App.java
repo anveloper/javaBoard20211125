@@ -24,7 +24,7 @@ public class App {
 			conn = DriverManager.getConnection(url, "root", "");
 
 			while (true) {
-				System.out.printf("* 명령어 : ");
+				System.out.printf("> 명령어 : ");
 				String cmd = sc.nextLine();
 				cmd = cmd.trim();
 
@@ -55,7 +55,7 @@ public class App {
 
 	private int doAction(Connection conn, Scanner sc, String cmd, Session ss) {
 //==============member===============================================
-		if (cmd.equals("member join")) {
+		if (cmd.equals("member join") || cmd.equals("join")) {
 			String loginId;
 			String loginPw;
 			String loginPwConfirm;
@@ -148,7 +148,7 @@ public class App {
 
 			System.out.printf("* %d번 회원이 추가되었습니다.\n", id);
 
-		} else if (cmd.equals("member login")) {
+		} else if (cmd.equals("member login") || cmd.equals("login")) {
 			String loginId;
 			String loginPw;
 			SecSql sql = new SecSql();
@@ -215,21 +215,22 @@ public class App {
 				System.out.printf("* 비밀번호가 일치하지 않습니다.\n");
 				return 0;
 			}
-			
-			ss.logonMember = member; // login 정보 유지를 위해 만들었는데..
+			ss.logonMemberId = member.id;
+			ss.logonMember = member;
 
 			System.out.printf("* %s(%s)님 환영합니다.\n", ss.logonMember.name, ss.logonMember.loginId);
 
-		} else if (cmd.equals("member logout")) {
+		} else if (cmd.equals("member logout") || cmd.equals("logout")) {
 			if (ss.isLogon() == false) {
 				System.out.printf("* 로그인 상태가 아닙니다.\n");
 				return 0;
 			}
 
 			System.out.printf("* %s(%s)가 로그아웃 되었습니다.\n", ss.logonMember.name, ss.logonMember.loginId);
+			ss.logonMemberId = -1;
 			ss.logonMember = null;
 
-		} else if (cmd.equals("member whoami")) {
+		} else if (cmd.equals("member whoami") || cmd.equals("whoami")) {
 			if (ss.isLogon() == false) {
 				System.out.printf("* 로그인 상태가 아닙니다. 로그인 후 이용해 주세요.\n");
 				return 0;
@@ -242,7 +243,7 @@ public class App {
 		}
 
 //==============article===============================================		
-		else if (cmd.equals("article write")) {
+		else if (cmd.equals("article write") || cmd.equals("write")) {
 
 			String title;
 			String body;
@@ -264,7 +265,7 @@ public class App {
 
 			System.out.printf("* %d번 게시글이 추가되었습니다.\n", id);
 
-		} else if (cmd.equals("article list")) {
+		} else if (cmd.equals("article list") || cmd.equals("")) {
 			System.out.printf("* 게시글 목록\n");
 			List<Article> articles = new ArrayList<>();
 
