@@ -12,11 +12,18 @@ import com.sbs.example.board.util.DBUtil;
 import com.sbs.example.board.util.SecSql;
 
 public class App {
+
+	public Member logonMember;
+
+	App() {
+		Member logonMember = null;
+
+	}
+
 	public void run() {
 		Scanner sc = new Scanner(System.in);
 
 		Connection conn = null;
-
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			String url = "jdbc:mysql://127.0.0.1:3306/text_board?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul&useOldAliasMetadataBehavior=true&zeroDateTimeNehavior=convertToNull";
@@ -60,16 +67,17 @@ public class App {
 			String loginPw;
 			String loginPwConfirm;
 			String name;
+
 			System.out.printf("* 회원가입 \n");
-			
+
 			int joinTry = 0;
-			
+
 			while (true) {
-				if(joinTry > 2) {
+				if (joinTry > 2) {
 					System.out.printf("* 회원가입을 다시 시도해 주세요.\n");
 					return 0;
 				}
-				System.out.printf("* 로그인 아이디 : ");
+				System.out.printf("> 로그인 아이디 : ");
 				loginId = sc.nextLine();
 
 				if (loginId.length() == 0) {
@@ -80,11 +88,11 @@ public class App {
 
 				SecSql sql = new SecSql();
 
-				sql.append("SELECT COUNT(*)");
-				sql.append("FROM member");
+				sql.append("SELECT COUNT(*) FROM `member`");
 				sql.append("WHERE loginId = ?", loginId);
 
 				int memberCount = DBUtil.selectRowIntValue(conn, sql);
+
 				if (memberCount > 0) {
 					System.out.printf("* 이미 존재하는 아이디 입니다.\n");
 					joinTry++;
@@ -95,18 +103,18 @@ public class App {
 			}
 			joinTry = 0;
 			while (true) {
-				if(joinTry > 2) {
+				if (joinTry > 2) {
 					System.out.printf("* 회원가입을 다시 시도해 주세요.\n");
 					return 0;
 				}
-				System.out.printf("* 로그인 비밀번호 : ");
+				System.out.printf("> 로그인 비밀번호 : ");
 				loginPw = sc.nextLine();
 				if (loginPw.length() == 0) {
 					System.out.printf("* 비밀번호를 입력해주세요.\n");
 					joinTry++;
 					continue;
 				}
-				System.out.printf("* 로그인 비밀번호 확인 : ");
+				System.out.printf("> 로그인 비밀번호 확인 : ");
 				loginPwConfirm = sc.nextLine();
 				if (!loginPw.equals(loginPwConfirm)) {
 					System.out.printf("* 비밀번호가 서로 다릅니다.\n");
@@ -117,23 +125,23 @@ public class App {
 				break;
 			}
 			joinTry = 0;
-			while(true) {
-				if(joinTry > 2) {
+			while (true) {
+				if (joinTry > 2) {
 					System.out.printf("* 회원가입을 다시 시도해 주세요.\n");
 					return 0;
 				}
-				System.out.printf("* 로그인 이름 : ");
+				System.out.printf("> 로그인 이름 : ");
 				name = sc.nextLine();
-				if(name.length() == 0) {
+				if (name.length() == 0) {
 					System.out.printf("* 아이디를 입력해주세요.\n");
 					joinTry++;
 					continue;
 				}
 				break;
 			}
-			
+
 			SecSql sql = new SecSql();
-			
+
 			sql.append("INSERT INTO member");
 			sql.append("SET regDate = NOW()");
 			sql.append(", updateDate = NOW()");
@@ -144,6 +152,70 @@ public class App {
 			int id = DBUtil.insert(conn, sql);
 
 			System.out.printf("* %d번 회원이 추가되었습니다.\n", id);
+
+		} else if (cmd.equals("member login")) {
+			String loginId;
+			String loginPw;
+			SecSql sql = new SecSql();
+
+			System.out.printf("* 회원 로그인\n");
+
+			while (true) {
+				System.out.printf("> 로그인 아이디 : ");
+				loginId = sc.nextLine();
+				if (loginId.length() == 0) {
+					System.out.printf("* 아이디를 입력해 주세요.\n");
+					continue;
+				}
+				sql.append("SELECT COUNT(*) FROM member");
+				sql.append("WHERE loginId = ?", loginId);
+
+				int memberCnt = DBUtil.selectRowIntValue(conn, sql);
+				if (memberCnt == 0) {
+					System.out.println("* 아디기가 존재하지 않습니다.");
+					continue;
+				}
+				break;
+			}
+			while (true) {
+				System.out.printf("> 로그인 비밀번호 : ");
+				loginPw = sc.nextLine();
+				if (loginPw.length() == 0) {
+					System.out.printf("* 비밀번호를 입력해 주세요.\n");
+					continue;
+				}
+				break;
+			}
+
+			sql = new SecSql();
+
+			sql.append("SELECT * FROM member");
+			sql.append("WHERE loginId = ?", loginId);
+
+			Map<String, Object> foundMember = DBUtil.selectRow(conn, sql);
+			logonMember = new Member(foundMember);
+
+			System.out.printf("* %s(%s)님 환영합니다.\n", logonMember.name, logonMember.loginId);
+
+		} else if (cmd.equals("member logout")) {
+			if (isLogon() == false) {
+				System.out.printf("* 로그인 상태가 아닙니다.\n");
+				return 0;
+			}
+
+			System.out.printf("* %s(%s)가 로그아웃 되었습니다.\n", logonMember.name, logonMember.loginId);
+			logonMember = null;
+
+		} else if (cmd.equals("member whoami")) {
+			if (isLogon() == false) {
+				System.out.printf("* 로그인 상태가 아닙니다. 로그인 후 이용해 주세요.\n");
+				return 0;
+			}
+			System.out.printf("* 로그인된 회원정보 ===============================================\n");
+			System.out.printf("| 고유번호 : %d\n", logonMember.id);
+			System.out.printf("| 등록일자 : %-14s 갱신일자 : %s\n", logonMember.regDate, logonMember.updateDate);
+			System.out.printf("| 계정명   : %-14s 	 이름	  : %s\n", logonMember.loginId, logonMember.name);
+			System.out.printf("* =================================================================\n");
 		}
 
 //==============article===============================================		
@@ -314,5 +386,10 @@ public class App {
 			System.out.printf("* 잘못된 명령어입니다.\n");
 		}
 		return 0;
+	}
+
+//==========================================================================================================
+	private boolean isLogon() {
+		return logonMember != null;
 	}
 }

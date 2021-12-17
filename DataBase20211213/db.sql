@@ -22,11 +22,18 @@ WHERE id > 1;
 CREATE TABLE `member`(
     id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
     PRIMARY KEY(id),
-    reDate DATETIME NOT NULL,
+    regDate DATETIME NOT NULL,
     updateDate DATETIME NOT NULL,
     loginId CHAR(100) NOT NULL,
     loginPw CHAR(100) NOT NULL,
     `name` CHAR(100) NOT NULL
 );
 
+SELECT * FROM `member`;
+
 DESC `member`;
+
+INSERT INTO `member` 
+SET regDate = NOW(), updateDate = NOW(),
+loginId = 'admin', loginPw = 'admin', `name` = 'admin';
+
