@@ -4,18 +4,22 @@ import java.sql.Connection;
 import java.util.Map;
 import java.util.Scanner;
 
-import com.sbs.example.board.Member;
+import com.sbs.example.board.dto.Member;
+import com.sbs.example.board.service.MemberService;
 import com.sbs.example.board.session.Session;
 import com.sbs.example.board.util.DBUtil;
 import com.sbs.example.board.util.SecSql;
 
 public class MemberController extends Controller {
 	
+	MemberService memberService;
+	
 	public MemberController(Connection conn, Scanner sc, String cmd, Session ss) {
 		this.conn = conn;
 		this.sc = sc;
-		this.cmd = cmd;
+		this.cmd = cmd; // cmd와 ss는 controller에서 처리하고 service로 넘긴다.
 		this.ss = ss;
+		memberService = new MemberService(conn);
 	}
 
 	public void doJoin() {
@@ -30,14 +34,11 @@ public class MemberController extends Controller {
 			return;
 		}
 		
-		SecSql sql = new SecSql();
-		
 		System.out.printf("* 회원가입 \n");
 
 		int joinTry = 0;
 
 		while (true) {
-			sql = new SecSql();
 			
 			if (joinTry > 2) {
 				System.out.printf("* 회원가입을 다시 시도해 주세요.\n");
@@ -51,11 +52,8 @@ public class MemberController extends Controller {
 				joinTry++;
 				continue;
 			}				
-
-			sql.append("SELECT COUNT(*) FROM `member`");
-			sql.append("WHERE loginId = ?", loginId);
-
-			int memberCount = DBUtil.selectRowIntValue(conn, sql);
+			
+			int memberCount = memberService.getMemberCntByLoginId(loginId); 
 
 			if (memberCount > 0) {
 				System.out.printf("* 이미 존재하는 아이디 입니다.\n");
@@ -103,17 +101,7 @@ public class MemberController extends Controller {
 			}
 			break;
 		}
-
-		sql = new SecSql();
-
-		sql.append("INSERT INTO member");
-		sql.append("SET regDate = NOW()");
-		sql.append(", updateDate = NOW()");
-		sql.append(", loginId = ?", loginId);
-		sql.append(", loginPw = ?", loginPw);
-		sql.append(", name = ?", name);
-
-		int id = DBUtil.insert(conn, sql);
+		int id = memberService.getMemberIdByNewId(loginId,loginPw,name);
 
 		System.out.printf("* %d번 회원이 추가되었습니다.\n", id);
 
