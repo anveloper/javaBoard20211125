@@ -15,9 +15,8 @@ CREATE TABLE article (
 
 DESC article;
 SELECT * FROM article;
-SELECT * FROM article WHERE id = 4;
-DELETE FROM article
-WHERE id > 1;
+## SELECT * FROM article WHERE id = 4;
+## DELETE FROM article WHERE id > 1;
 
 CREATE TABLE `member`(
     id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -36,4 +35,11 @@ DESC `member`;
 INSERT INTO `member` 
 SET regDate = NOW(), updateDate = NOW(),
 loginId = 'admin', loginPw = 'admin', `name` = 'admin';
+
+UPDATE article 
+SET regDate = regDate, updateDate = NOW(), title = "수정확인", `body`="수정확인"
+WHERE id = 2;
+
+SELECT * FROM article;
+
 

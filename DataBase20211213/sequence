@@ -38,3 +38,5 @@
  - loginId의 고유값을 유지하거나, Pw를 비교하여 로그인 가능하게 하는 조건문이 필요함. 
  
     
+app에서 controller로 기능 이전, 실행함수 단위로 일단 refactoring    
+    
