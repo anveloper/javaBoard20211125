@@ -177,10 +177,10 @@ public class MemberController extends Controller {
 			System.out.printf("* 비밀번호가 일치하지 않습니다.\n");
 			return;
 		}
-		ss.logonMemberId = member.id;
-		ss.logonMember = member;
-
-		System.out.printf("* %s(%s)님 환영합니다.\n", ss.logonMember.name, ss.logonMember.loginId);
+		ss.setLogonMemberId(member.id);
+		ss.setLogonMember(member);
+		
+		System.out.printf("* %s(%s)님 환영합니다.\n", ss.getLogonMember().name, ss.getLogonMember().loginId);
 	}
 
 	private void doLogout() {
@@ -190,9 +190,9 @@ public class MemberController extends Controller {
 			return;
 		}
 
-		System.out.printf("* %s(%s)가 로그아웃 되었습니다.\n", ss.logonMember.name, ss.logonMember.loginId);
-		ss.logonMemberId = -1;
-		ss.logonMember = null;
+		System.out.printf("* %s(%s)가 로그아웃 되었습니다.\n", ss.getLogonMember().name, ss.getLogonMember().loginId);
+		ss.setLogonMemberId(-1);
+		ss.setLogonMember(null);
 	}
 
 	private void whoAmI() {
@@ -202,9 +202,9 @@ public class MemberController extends Controller {
 			return;
 		}
 		System.out.printf("* 로그인된 회원정보 ===============================================\n");
-		System.out.printf("| 고유번호 : %d\n", ss.logonMember.id);
-		System.out.printf("| 등록일자 : %-22s 갱신일자 : %s\n", ss.logonMember.regDate, ss.logonMember.updateDate);
-		System.out.printf("| 계정명   : %-22s 이름     : %s\n", ss.logonMember.loginId, ss.logonMember.name);
+		System.out.printf("| 고유번호 : %d\n", ss.getLogonMember().id);
+		System.out.printf("| 등록일자 : %-22s 갱신일자 : %s\n", ss.getLogonMember().regDate, ss.getLogonMember().updateDate);
+		System.out.printf("| 계정명   : %-22s 이름     : %s\n", ss.getLogonMember().loginId, ss.getLogonMember().name);
 		System.out.printf("* =================================================================\n");
 	}
 
