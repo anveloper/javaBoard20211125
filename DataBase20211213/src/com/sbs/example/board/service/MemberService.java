@@ -1,6 +1,7 @@
 package com.sbs.example.board.service;
 
 import java.sql.Connection;
+import java.util.Map;
 
 import com.sbs.example.board.dao.MemberDao;
 
@@ -18,6 +19,10 @@ public class MemberService {
 
 	public int getMemberIdByNewId(String loginId, String loginPw, String name) {
 		return memberDao.getMemberIdByNewId(loginId, loginPw, name);
+	}
+
+	public Map<String, Object> getMemberByLoginId(String loginId) {
+		return memberDao.getMemberByLoginId(loginId);
 	}
 
 }

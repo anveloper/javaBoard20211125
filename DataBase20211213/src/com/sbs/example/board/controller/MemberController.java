@@ -7,15 +7,12 @@ import java.util.Scanner;
 import com.sbs.example.board.dto.Member;
 import com.sbs.example.board.service.MemberService;
 import com.sbs.example.board.session.Session;
-import com.sbs.example.board.util.DBUtil;
-import com.sbs.example.board.util.SecSql;
 
 public class MemberController extends Controller {
 	
 	MemberService memberService;
 	
 	public MemberController(Connection conn, Scanner sc, String cmd, Session ss) {
-		this.conn = conn;
 		this.sc = sc;
 		this.cmd = cmd; // cmd와 ss는 controller에서 처리하고 service로 넘긴다.
 		this.ss = ss;
@@ -111,7 +108,6 @@ public class MemberController extends Controller {
 
 		String loginId;
 		String loginPw;
-		SecSql sql = new SecSql();
 		
 		if(ss.isLogon() == true) {
 			System.out.printf("* 로그인 상태입니다.\n");
@@ -123,7 +119,6 @@ public class MemberController extends Controller {
 		int joinTry = 0;
 		
 		while (true) {
-			sql = new SecSql();
 			
 			if (joinTry > 2) {
 				System.out.printf("* 로그인을 다시 시도해 주세요.\n");
@@ -136,10 +131,8 @@ public class MemberController extends Controller {
 				joinTry++;
 				continue;
 			}
-			sql.append("SELECT COUNT(*) FROM member");
-			sql.append("WHERE loginId = ?", loginId);
-
-			int memberCnt = DBUtil.selectRowIntValue(conn, sql);
+			
+			int memberCnt = memberService.getMemberCntByLoginId(loginId); 
 			if (memberCnt == 0) {
 				System.out.println("* 아이디가 존재하지 않습니다.");
 				joinTry++;
@@ -162,13 +155,8 @@ public class MemberController extends Controller {
 			}
 			break;
 		}
-
-		sql = new SecSql();
-
-		sql.append("SELECT * FROM member");
-		sql.append("WHERE loginId = ?", loginId);
-
-		Map<String, Object> foundMember = DBUtil.selectRow(conn, sql);
+		
+		Map<String, Object> foundMember = memberService.getMemberByLoginId(loginId);
 		Member member = new Member(foundMember);
 		
 		if(!member.loginPw.equals(loginPw)) {

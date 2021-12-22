@@ -1,6 +1,7 @@
 package com.sbs.example.board.dao;
 
 import java.sql.Connection;
+import java.util.Map;
 
 import com.sbs.example.board.util.DBUtil;
 import com.sbs.example.board.util.SecSql;
@@ -33,6 +34,15 @@ public class MemberDao {
 		sql.append(", name = ?", name);
 
 		return DBUtil.insert(conn, sql);
+	}
+
+	public Map<String, Object> getMemberByLoginId(String loginId) {
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT * FROM member");
+		sql.append("WHERE loginId = ?", loginId);
+		
+		return DBUtil.selectRow(conn, sql);
 	}
 
 }
