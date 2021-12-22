@@ -9,9 +9,9 @@ import com.sbs.example.board.service.MemberService;
 import com.sbs.example.board.session.Session;
 
 public class MemberController extends Controller {
-	
+
 	MemberService memberService;
-	
+
 	public MemberController(Connection conn, Scanner sc, String cmd, Session ss) {
 		this.sc = sc;
 		this.cmd = cmd; // cmd와 ss는 controller에서 처리하고 service로 넘긴다.
@@ -19,24 +19,38 @@ public class MemberController extends Controller {
 		memberService = new MemberService(conn);
 	}
 
-	public void doJoin() {
+	public void doAction() {
+		if (cmd.equals("member join")) {
+			doJoin();
+		} else if (cmd.equals("member login")) {
+			doLogin();
+		} else if (cmd.equals("member logout")) {
+			doLogout();
+		} else if (cmd.equals("member whoami")) {
+			whoAmI();
+		} else {
+			System.out.printf("* 존재하지 않는 명령어입니다.\n");
+		}
+	}
+
+	private void doJoin() {
 
 		String loginId;
 		String loginPw;
 		String loginPwConfirm;
 		String name;
-		
-		if(ss.isLogon() == true) {
+
+		if (ss.isLogon() == true) {
 			System.out.printf("* 로그인 상태입니다. 로그아웃 후 진행해주세요.\n");
 			return;
 		}
-		
+
 		System.out.printf("* 회원가입 \n");
 
 		int joinTry = 0;
 
 		while (true) {
-			
+
 			if (joinTry > 2) {
 				System.out.printf("* 회원가입을 다시 시도해 주세요.\n");
 				return;
@@ -48,9 +62,9 @@ public class MemberController extends Controller {
 				System.out.printf("* 아이디를 입력해주세요.\n");
 				joinTry++;
 				continue;
-			}				
-			
-			int memberCount = memberService.getMemberCntByLoginId(loginId); 
+			}
+
+			int memberCount = memberService.getMemberCntByLoginId(loginId);
 
 			if (memberCount > 0) {
 				System.out.printf("* 이미 존재하는 아이디 입니다.\n");
@@ -98,28 +112,28 @@ public class MemberController extends Controller {
 			}
 			break;
 		}
-		int id = memberService.getMemberIdByNewId(loginId,loginPw,name);
+		int id = memberService.getMemberIdByNewId(loginId, loginPw, name);
 
 		System.out.printf("* %d번 회원이 추가되었습니다.\n", id);
 
 	}
 
-	public void doLogin() {
+	private void doLogin() {
 
 		String loginId;
 		String loginPw;
-		
-		if(ss.isLogon() == true) {
+
+		if (ss.isLogon() == true) {
 			System.out.printf("* 로그인 상태입니다.\n");
 			return;
 		}
-		
+
 		System.out.printf("* 회원 로그인\n");
-		
+
 		int joinTry = 0;
-		
+
 		while (true) {
-			
+
 			if (joinTry > 2) {
 				System.out.printf("* 로그인을 다시 시도해 주세요.\n");
 				return;
@@ -131,8 +145,8 @@ public class MemberController extends Controller {
 				joinTry++;
 				continue;
 			}
-			
-			int memberCnt = memberService.getMemberCntByLoginId(loginId); 
+
+			int memberCnt = memberService.getMemberCntByLoginId(loginId);
 			if (memberCnt == 0) {
 				System.out.println("* 아이디가 존재하지 않습니다.");
 				joinTry++;
@@ -155,11 +169,11 @@ public class MemberController extends Controller {
 			}
 			break;
 		}
-		
+
 		Map<String, Object> foundMember = memberService.getMemberByLoginId(loginId);
 		Member member = new Member(foundMember);
-		
-		if(!member.loginPw.equals(loginPw)) {
+
+		if (!member.loginPw.equals(loginPw)) {
 			System.out.printf("* 비밀번호가 일치하지 않습니다.\n");
 			return;
 		}
@@ -169,8 +183,8 @@ public class MemberController extends Controller {
 		System.out.printf("* %s(%s)님 환영합니다.\n", ss.logonMember.name, ss.logonMember.loginId);
 	}
 
-	public void doLogout() {
-		
+	private void doLogout() {
+
 		if (ss.isLogon() == false) {
 			System.out.printf("* 로그인 상태가 아닙니다.\n");
 			return;
@@ -181,7 +195,7 @@ public class MemberController extends Controller {
 		ss.logonMember = null;
 	}
 
-	public void whoAmI() {
+	private void whoAmI() {
 
 		if (ss.isLogon() == false) {
 			System.out.printf("* 로그인 상태가 아닙니다. 로그인 후 이용해 주세요.\n");
@@ -193,5 +207,5 @@ public class MemberController extends Controller {
 		System.out.printf("| 계정명   : %-22s 이름     : %s\n", ss.logonMember.loginId, ss.logonMember.name);
 		System.out.printf("* =================================================================\n");
 	}
-	
+
 }

@@ -5,10 +5,10 @@ import java.util.Scanner;
 
 import com.sbs.example.board.session.Session;
 
-public class Controller {
+public abstract class Controller {
 	Connection conn;
 	Scanner sc;
 	String cmd;
 	Session ss;
-
+	public abstract void doAction();
 }

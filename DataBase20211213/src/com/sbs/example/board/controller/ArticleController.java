@@ -19,8 +19,24 @@ public class ArticleController extends Controller {
 		
 		articleService = new ArticleService(conn);
 	}
-
-	public void doWrite() {
+	
+	public void doAction() {
+		if (cmd.equals("article write")) {
+			doWrite();
+		} else if (cmd.equals("article list")) {
+			showList();
+		} else if (cmd.startsWith("article detail ")) {
+			showDetail();
+		} else if (cmd.startsWith("article modify ")) {
+			doModify();
+		} else if (cmd.startsWith("article delete ")) {
+			doDelete();
+		} else {
+			System.out.printf("* 존재하지 않는 명령어입니다.\n");
+		}
+	}
+	
+	private void doWrite() {
 		String title;
 		String body;
 		System.out.printf("* 게시글 작성 \n");
@@ -34,7 +50,7 @@ public class ArticleController extends Controller {
 		System.out.printf("* %d번 게시글이 추가되었습니다.\n", id);
 	}
 
-	public void showList() {
+	private void showList() {
 		System.out.printf("* 게시글 목록\n");
 		List<Article> articles = articleService.getArticles(); 
 
@@ -52,7 +68,7 @@ public class ArticleController extends Controller {
 		}
 	}
 
-	public void showDetail() {
+	private void showDetail() {
 
 		boolean isInt = cmd.split(" ")[2].matches("-?\\d+");
 		if (!isInt) {
@@ -76,10 +92,10 @@ public class ArticleController extends Controller {
 		System.out.printf("* 등록일자 : %s		갱신일자 : %s\n", article.regDate, article.updateDate);
 		System.out.printf("* 제목 : %s\n", article.title);
 		System.out.printf("* 내용 =========================================================================\n");
-		System.out.printf(" >> %s \n\n\n", article.body);
+		System.out.printf("| >> %s \n| \n| \n* \n", article.body);
 	}
 
-	public void doModify() {
+	private void doModify() {
 		boolean isInt = cmd.split(" ")[2].matches("-?\\d+");
 		if (!isInt) {
 			System.out.println("* 게시글의 ID를 숫자로 입력해주세요.\n");
@@ -109,7 +125,7 @@ public class ArticleController extends Controller {
 		System.out.printf("* %d번 게시글이 수정되었습니다.\n", id);
 	}
 
-	public void doDelete() {
+	private void doDelete() {
 		int id = Integer.parseInt(cmd.split(" ")[2].trim());
 
 		boolean isInt = cmd.split(" ")[2].matches("-?\\d+");
