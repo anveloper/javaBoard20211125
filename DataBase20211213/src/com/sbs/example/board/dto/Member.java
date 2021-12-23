@@ -4,12 +4,12 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 public class Member {
-	public int id;
-	public LocalDateTime regDate;
-	public LocalDateTime updateDate;
-	public String loginId;
-	public String loginPw;
-	public String name;
+	private int id;
+	private LocalDateTime regDate;
+	private LocalDateTime updateDate;
+	private String loginId;
+	private String loginPw;
+	private String name;
 
 	public Member(Map<String, Object> foundMemberMap) {
 		this.id = (int) foundMemberMap.get("id");
@@ -18,6 +18,54 @@ public class Member {
 		this.loginId = (String) foundMemberMap.get("loginId");
 		this.loginPw = (String) foundMemberMap.get("loginPw");
 		this.name = (String) foundMemberMap.get("name");
+	}
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public LocalDateTime getRegDate() {
+		return regDate;
+	}
+
+	public void setRegDate(LocalDateTime regDate) {
+		this.regDate = regDate;
+	}
+
+	public LocalDateTime getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(LocalDateTime updateDate) {
+		this.updateDate = updateDate;
+	}
+
+	public String getLoginId() {
+		return loginId;
+	}
+
+	public void setLoginId(String loginId) {
+		this.loginId = loginId;
+	}
+
+	public String getLoginPw() {
+		return loginPw;
+	}
+
+	public void setLoginPw(String loginPw) {
+		this.loginPw = loginPw;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }
