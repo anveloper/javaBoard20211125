@@ -17,12 +17,15 @@ public class Session { // getter setter로 만들어야 안전하다.
 	public int getLogonMemberId() {
 		return logonMemberId;
 	}
+	
 	public void setLogonMemberId(int logonMemberId) {
 		this.logonMemberId = logonMemberId;
 	}
+	
 	public Member getLogonMember() {
 		return logonMember;
 	}
+	
 	public void setLogonMember(Member logonMember) {
 		this.logonMember = logonMember;
 	}

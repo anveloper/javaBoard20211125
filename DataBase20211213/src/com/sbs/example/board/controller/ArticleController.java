@@ -23,7 +23,7 @@ public class ArticleController extends Controller {
 	public void doAction() {
 		if (cmd.equals("article write")) {
 			doWrite();
-		} else if (cmd.equals("article list")) {
+		} else if (cmd.startsWith("article list")) {
 			showList();
 		} else if (cmd.startsWith("article detail ")) {
 			showDetail();
@@ -39,32 +39,46 @@ public class ArticleController extends Controller {
 	private void doWrite() {
 		String title;
 		String body;
+		
+		if(ss.isLogon() == false) {
+			System.out.printf("* 로그인 상태가 아닙니다. 로그인 후 이용해 주세요.\n");
+			return;
+		}
+		
 		System.out.printf("* 게시글 작성 \n");
 		System.out.printf("* 제목 : ");
 		title = sc.nextLine();
 		System.out.printf("* 내용 : ");
 		body = sc.nextLine();
 
-		int id = articleService.doWrite(title, body);
+		int id = articleService.doWrite(title, body, ss.getLogonMemberId());
 
 		System.out.printf("* %d번 게시글이 추가되었습니다.\n", id);
 	}
 
 	private void showList() {
+		String[] searchKey = cmd.split(" ");
+		List<Article> articles = null;
+		
+		if (searchKey.length < 3) {
+			articles = articleService.getArticles();
+		} else {
+			articles = articleService.getArticlesByKey(searchKey[3]);
+		}
+		
 		System.out.printf("* 게시글 목록\n");
-		List<Article> articles = articleService.getArticles();
-
+		
 		if (articles.size() == 0) {
 			System.out.printf("* 표시할 게시글이 없습니다.\n");
 			return;
 		}
-
-		System.out.printf("번호	| 등록날짜		| 수정날짜		| 제목			| 내용\n");
+		
+		System.out.printf("번호	| 등록날짜		| 수정날짜		| 제목			| 작성자	| 조회수\n");
 		System.out.println(
-				"================================================================================================");
+				"=========================================================================================================");
 		for (Article article : articles) {
-			System.out.printf("%d	| %s	| %s	| %-14s	| %s	\n", article.getId(), article.getRegDate(),
-					article.getUpdateDate(), article.getTitle(), article.getBody());
+			System.out.printf("%d	| %s	| %s	| %-14s	| %s		| %d \n", article.getId(), article.getRegDate(),
+					article.getUpdateDate(), article.getTitle(), article.getExtra_writer(), article.getHit());
 		}
 	}
 
@@ -84,11 +98,13 @@ public class ArticleController extends Controller {
 			System.out.printf("* %d번 게시글이 존재하지 않습니다.\n", id);
 			return;
 		}
-
+		
+		articleService.increaseHit(id);
+		
 		Article article = articleService.getArticleById(id);
 
-		System.out.printf("* 게시글 상세보기\n");
-		System.out.printf("* 게시글 번호 : %d\n", article.getId());
+		System.out.printf("* 게시글 상세보기===============================================================\n");
+		System.out.printf("* 게시글 번호 : %d				작성자 : %s\n", article.getId(), article.getExtra_writer());
 		System.out.printf("* 등록일자 : %s		갱신일자 : %s\n", article.getRegDate(), article.getUpdateDate());
 		System.out.printf("* 제목 : %s\n", article.getTitle());
 		System.out.printf("* 내용 =========================================================================\n");
@@ -96,6 +112,11 @@ public class ArticleController extends Controller {
 	}
 
 	private void doModify() {
+		if(ss.isLogon() == false) {
+			System.out.printf("* 로그인 상태가 아닙니다. 로그인 후 이용해 주세요.\n");
+			return;
+		}
+		
 		boolean isInt = cmd.split(" ")[2].matches("-?\\d+");
 		if (!isInt) {
 			System.out.println("* 게시글의 ID를 숫자로 입력해주세요.\n");
@@ -110,7 +131,12 @@ public class ArticleController extends Controller {
 			System.out.printf("* %d번 게시글이 존재하지 않습니다.\n", id);
 			return;
 		}
-
+		
+		if (ss.getLogonMemberId() != articleService.getMemberIdById(id)) {
+			System.out.printf("* 작성자만 수정할 수 있습니다.\n");
+			return;	
+		}
+		
 		String title;
 		String body;
 
@@ -126,6 +152,11 @@ public class ArticleController extends Controller {
 	}
 
 	private void doDelete() {
+		if(ss.isLogon() == false) {
+			System.out.printf("* 로그인 상태가 아닙니다. 로그인 후 이용해 주세요.\n");
+			return;
+		}
+		
 		int id = Integer.parseInt(cmd.split(" ")[2].trim());
 
 		boolean isInt = cmd.split(" ")[2].matches("-?\\d+");
@@ -140,11 +171,14 @@ public class ArticleController extends Controller {
 			System.out.printf("* %d번 게시글이 존재하지 않습니다.\n", id);
 			return;
 		}
-
+		
+		if (ss.getLogonMemberId() != articleService.getMemberIdById(id)) {
+			System.out.printf("* 작성자만 삭제할 수 있습니다.\n");
+			return;	
+		}
+		
 		articleService.doDelete(id);
 
 		System.out.printf("* %d번 게시글이 삭제되었습니다.\n", id);
-
 	}
-
 }

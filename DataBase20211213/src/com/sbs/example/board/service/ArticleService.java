@@ -13,8 +13,8 @@ public class ArticleService {
 		this.articleDao = new ArticleDao(conn);
 	}
 
-	public int doWrite(String title, String body) {
-		return articleDao.doWrite(title, body);
+	public int doWrite(String title, String body, int logonMemberId) {
+		return articleDao.doWrite(title, body, logonMemberId);
 	}
 
 	public int getArticleCntById(int id) {
@@ -23,6 +23,10 @@ public class ArticleService {
 
 	public List<Article> getArticles() {
 		return articleDao.getArticles();
+	}
+
+	public List<Article> getArticlesByKey(String keyword) {
+		return articleDao.getArticles(keyword);
 	}
 
 	public void doModify(String title, String body, int id) {
@@ -35,6 +39,14 @@ public class ArticleService {
 
 	public void doDelete(int id) {
 		articleDao.doDelete(id);
+	}
+
+	public int getMemberIdById(int id) {
+		return articleDao.getMemberIdById(id);
+	}
+
+	public void increaseHit(int id) {
+		articleDao.increaseHit(id);
 	}
 
 }
