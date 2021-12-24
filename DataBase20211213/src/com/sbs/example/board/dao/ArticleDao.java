@@ -26,6 +26,7 @@ public class ArticleDao {
 		sql.append(", memberId = ?", logonMemberId);
 		sql.append(", title = ?", title);
 		sql.append(", body = ?", body);
+		sql.append(", hit = 0");
 
 		return DBUtil.insert(conn, sql);
 	}
@@ -51,6 +52,25 @@ public class ArticleDao {
 		sql.append("ORDER BY a.id DESC");
 		
 		List<Map<String, Object>> articleListMap =  DBUtil.selectRows(conn, sql);
+		
+		for (Map<String, Object> articleMap : articleListMap) {
+			articles.add(new Article(articleMap));
+		}
+		return articles;
+	}
+	
+	public List<Article> getArticles(String keyword) {
+		List<Article> articles = new ArrayList<>();
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT a.*, m.name AS extra_writer");
+		sql.append("FROM article AS a");
+		sql.append("LEFT JOIN `member` AS m");
+		sql.append("ON a.memberId = m.id");
+		sql.append("WHERE a.title LIKE CONCAT('%',?,'%')", keyword);		
+		sql.append("ORDER BY a.id DESC");
+		
+		List<Map<String, Object>> articleListMap = DBUtil.selectRows(conn, sql);
 		
 		for (Map<String, Object> articleMap : articleListMap) {
 			articles.add(new Article(articleMap));
@@ -103,25 +123,6 @@ public class ArticleDao {
 		sql.append("WHERE id = ?", id);
 				
 		return DBUtil.selectRowIntValue(conn, sql);
-	}
-
-	public List<Article> getArticles(String keyword) {
-		List<Article> articles = new ArrayList<>();
-		SecSql sql = new SecSql();
-
-		sql.append("SELECT a.*, m.name AS extra_writer");
-		sql.append("FROM article AS a");
-		sql.append("LEFT JOIN `member` AS m");
-		sql.append("ON a.memberId = m.id");
-		sql.append("WHERE a.title LIKE '%?%'", keyword);
-		sql.append("ORDER BY a.id DESC");
-		
-		List<Map<String, Object>> articleListMap =  DBUtil.selectRows(conn, sql);
-		
-		for (Map<String, Object> articleMap : articleListMap) {
-			articles.add(new Article(articleMap));
-		}
-		return articles;
 	}
 
 	public void increaseHit(int id) {
