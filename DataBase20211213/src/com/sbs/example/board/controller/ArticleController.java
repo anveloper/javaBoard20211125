@@ -61,30 +61,58 @@ public class ArticleController extends Controller {
 		String searchKey = "";
 		List<Article> articles = null;
 
-		if (cmdBits.length < 3) {
-			if (cmd.length() != 12) { //띄어 쓰기를 안하는 경우
-				System.out.printf("* 명령어를 잘못 입력하였습니다.\n");
-				return;
-			}
-			articles = articleService.getArticles();
-		} else {
-			searchKey = cmd.substring("article list ".length());
-			articles = articleService.getArticlesByKey(searchKey);
-		}
-
 		System.out.printf("* 게시글 목록\n");
 
-		if (articles.size() == 0) {
-			System.out.printf("* 표시할 게시글이 없습니다.\n");
-			return;
-		}
+		int page = 1;
+		int itemInAPage = 5;
 
-		System.out.printf("번호	| 등록날짜		| 수정날짜		| 제목			| 작성자	| 조회수\n");
-		System.out.println(
-				"=========================================================================================================");
-		for (Article article : articles) {
-			System.out.printf("%d	| %s	| %s	| %-14s	| %s		| %d \n", article.getId(), article.getRegDate(),
-					article.getUpdateDate(), article.getTitle(), article.getExtra_writer(), article.getHit());
+		while (true) {
+
+			if (page == 0) break;
+
+			if (cmdBits.length < 3) {
+				if (cmd.length() != 12) { // 띄어 쓰기를 안하는 경우
+					System.out.printf("* 명령어를 잘못 입력하였습니다.\n");
+					return;
+				}
+				articles = articleService.getArticles(page, itemInAPage);
+			} else {
+				searchKey = cmd.substring("article list ".length());
+				articles = articleService.getArticlesByKey(searchKey, page, itemInAPage);
+			}
+
+			if (articles.size() == 0) {
+				System.out.printf("* 표시할 게시글이 없습니다.\n");
+				return;
+			}
+
+			System.out.printf("번호	| 등록날짜		| 수정날짜		| 제목			| 작성자	| 조회수\n");
+			System.out.println(
+					"=========================================================================================================");
+			for (Article article : articles) {
+				System.out.printf("%d	| %s	| %s	| %-14s	| %s		| %d \n", article.getId(),
+						article.getRegDate(), article.getUpdateDate(), article.getTitle(), article.getExtra_writer(),
+						article.getHit());
+			}
+			System.out.println(
+					"=========================================================================================================");
+			
+			// articles.size()도 가능하지만 sql 교육을 위해
+			int articlesCnt = articleService.getArticlesCnt(searchKey);
+			int lastPage = (int)Math.ceil(articlesCnt / (double)itemInAPage);
+
+			System.out.printf("					          [현재 페이지 : %-2d, 마지막 페이지 : %-2d, 전체글 수 : %-3d]\n",page ,lastPage ,articlesCnt);
+			System.out.printf("* 이동하려는 page 입력, 종료 시 0 이하 입력\n");
+			while(true) {
+				System.out.printf("[article list] > 명령어 : ");
+				page = sc.nextInt();
+				sc.nextLine(); // 버퍼 회수
+				if(page > lastPage) {
+					System.out.printf("* 없는 페이지 입니다.\n");
+					continue;
+				}
+				break;
+			}
 		}
 	}
 

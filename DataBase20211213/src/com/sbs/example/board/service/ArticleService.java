@@ -8,7 +8,7 @@ import com.sbs.example.board.dto.Article;
 
 public class ArticleService {
 	ArticleDao articleDao;
-	
+
 	public ArticleService(Connection conn) {
 		this.articleDao = new ArticleDao(conn);
 	}
@@ -21,12 +21,18 @@ public class ArticleService {
 		return articleDao.getArticleCntById(id);
 	}
 
-	public List<Article> getArticles() {
-		return articleDao.getArticles();
+	public List<Article> getArticles(int page, int itemInAPage) {
+		int limitFrom = (page - 1) * itemInAPage;
+		int limitTake = itemInAPage;
+
+		return articleDao.getArticles(limitFrom, limitTake);
 	}
 
-	public List<Article> getArticlesByKey(String keyword) {
-		return articleDao.getArticles(keyword);
+	public List<Article> getArticlesByKey(String keyword, int page, int itemInAPage) {
+		int limitFrom = (page - 1) * itemInAPage;
+		int limitTake = itemInAPage;
+
+		return articleDao.getArticles(keyword, limitFrom, limitTake);
 	}
 
 	public void doModify(String title, String body, int id) {
@@ -47,6 +53,10 @@ public class ArticleService {
 
 	public void increaseHit(int id) {
 		articleDao.increaseHit(id);
+	}
+
+	public int getArticlesCnt(String searchKey) {
+		return articleDao.getArticlesCnt(searchKey);
 	}
 
 }
