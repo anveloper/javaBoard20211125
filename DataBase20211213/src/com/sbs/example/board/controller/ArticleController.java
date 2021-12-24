@@ -103,6 +103,7 @@ public class ArticleController extends Controller {
 
 			System.out.printf("					          [현재 페이지 : %-2d, 마지막 페이지 : %-2d, 전체글 수 : %-3d]\n",page ,lastPage ,articlesCnt);
 			System.out.printf("* 이동하려는 page 입력, 종료 시 0 이하 입력\n");
+			
 			while(true) {
 				System.out.printf("[article list] > 명령어 : ");
 				page = sc.nextInt();

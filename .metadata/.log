@@ -1224,3 +1224,15 @@ Binding(CTRL+R,
 		,,true),null),
 	org.eclipse.ui.defaultAcceleratorConfiguration,
 	org.eclipse.debug.ui.console,,,system)
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2021-12-24 10:48:58.713
+!MESSAGE ClasspathListenerHandler removeClasspathListener sts4.classpath.mujFhJIG
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2021-12-24 10:48:58.713
+!MESSAGE unsubscribing from classpath changes: sts4.classpath.mujFhJIG
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2021-12-24 10:48:58.713
+!MESSAGE subsribers = {}
+
+!ENTRY org.springframework.tooling.ls.eclipse.commons 1 0 2021-12-24 10:48:58.713
+!MESSAGE ClasspathListenerHandler removeClasspathListener sts4.classpath.mujFhJIG => OK
