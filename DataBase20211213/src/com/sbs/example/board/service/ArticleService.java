@@ -59,4 +59,20 @@ public class ArticleService {
 		return articleDao.getArticlesCnt(searchKey);
 	}
 
+	public void insertLike(int id, int likeType, int logonMemberId) {
+		articleDao.insertLike(id, likeType, logonMemberId);
+	}
+
+	public int likeCheck(int id, int logonMemberId) {
+		return articleDao.likeCheck(id, logonMemberId);
+	}
+	
+	public void updateLike(int id, int likeType, int logonMemberId) {
+		articleDao.updateLike(id, likeType, logonMemberId);
+	}
+
+	public void cancelLike(int id, int logonMemberId) {
+		articleDao.cancelLike(id, logonMemberId);
+	}
+
 }

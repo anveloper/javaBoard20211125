@@ -31,6 +31,8 @@ public class ArticleController extends Controller {
 			doModify();
 		} else if (cmd.startsWith("article delete ")) {
 			doDelete();
+		} else if (cmd.startsWith("article like ")) {
+			doLike();
 		} else {
 			System.out.printf("* 존재하지 않는 명령어입니다.\n");
 		}
@@ -68,7 +70,8 @@ public class ArticleController extends Controller {
 
 		while (true) {
 
-			if (page == 0) break;
+			if (page == 0)
+				break;
 
 			if (cmdBits.length < 3) {
 				if (cmd.length() != 12) { // 띄어 쓰기를 안하는 경우
@@ -86,29 +89,30 @@ public class ArticleController extends Controller {
 				return;
 			}
 
-			System.out.printf("번호	| 등록날짜		| 수정날짜		| 제목			| 작성자	| 조회수\n");
+			System.out.printf("번호 | 등록날짜            | 수정날짜            | 제목			| 작성자	| 조회수\n");
 			System.out.println(
 					"=========================================================================================================");
 			for (Article article : articles) {
-				System.out.printf("%d	| %s	| %s	| %-14s	| %s		| %d \n", article.getId(),
+				System.out.printf("%-4d | %-19s | %-19s | %-14s	| %s		| %d \n", article.getId(),
 						article.getRegDate(), article.getUpdateDate(), article.getTitle(), article.getExtra_writer(),
 						article.getHit());
 			}
 			System.out.println(
 					"=========================================================================================================");
-			
+
 			// articles.size()도 가능하지만 sql 교육을 위해
 			int articlesCnt = articleService.getArticlesCnt(searchKey);
-			int lastPage = (int)Math.ceil(articlesCnt / (double)itemInAPage);
+			int lastPage = (int) Math.ceil(articlesCnt / (double) itemInAPage);
 
-			System.out.printf("					          [현재 페이지 : %-2d, 마지막 페이지 : %-2d, 전체글 수 : %-3d]\n",page ,lastPage ,articlesCnt);
+			System.out.printf("					          [현재 페이지 : %-2d, 마지막 페이지 : %-2d, 전체글 수 : %-3d]\n", page,
+					lastPage, articlesCnt);
 			System.out.printf("* 이동하려는 page 입력, 종료 시 0 이하 입력\n");
-			
-			while(true) {
+
+			while (true) {
 				System.out.printf("[article list] > 명령어 : ");
 				page = sc.nextInt();
 				sc.nextLine(); // 버퍼 회수
-				if(page > lastPage) {
+				if (page > lastPage) {
 					System.out.printf("* 없는 페이지 입니다.\n");
 					continue;
 				}
@@ -215,5 +219,68 @@ public class ArticleController extends Controller {
 		articleService.doDelete(id);
 
 		System.out.printf("* %d번 게시글이 삭제되었습니다.\n", id);
+	}
+
+	private void doLike() {
+		if (ss.isLogon() == false) { // 나중에 함수화
+			System.out.printf("* 로그인 상태가 아닙니다. 로그인 후 이용해 주세요.\n");
+			return;
+		}
+
+		int id = Integer.parseInt(cmd.split(" ")[2].trim());
+
+		boolean isInt = cmd.split(" ")[2].matches("-?\\d+");
+		if (!isInt) {
+			System.out.println("* 게시글의 ID를 숫자로 입력해주세요.\n");
+			return;
+		}
+
+		int articleCount = articleService.getArticleCntById(id);
+
+		if (articleCount == 0) {
+			System.out.printf("* %d번 게시글이 존재하지 않습니다.\n", id);
+			return;
+		}
+		System.out.printf("* 게시글 [추천] 1, [비추천] 2, [선택 해제] 3, [나기기] 0\n");
+
+		while (true) {
+			System.out.printf("[article like] > 명령어 : ");
+			int likeType = Integer.parseInt(sc.nextLine());
+
+			if (likeType == 0) {
+				System.out.printf("* [article like] 종료\n");
+				break;
+			}
+
+			int likeCheck = articleService.likeCheck(id, ss.getLogonMemberId());
+			
+			String msg = (likeType == 1 ? "추천" : "비추천");
+			
+			if (likeType == 1 || likeType == 2) {
+				
+				if (likeCheck > 0) {
+					if (likeCheck == likeType) {
+						System.out.printf("* 이미 %s한 게시글입니다.\n", msg);
+						continue;
+					} else {
+						articleService.updateLike(id, likeType, ss.getLogonMemberId());
+					}
+				} else {
+					articleService.insertLike(id, likeType, ss.getLogonMemberId());
+				}
+				System.out.printf("* %s 완료\n");
+
+			} else if (likeType == 3) {
+				if (likeCheck < 1) {
+					System.out.printf("* 아직 %s하지 않은 글입니다.\n", msg);
+					continue;
+				}
+				articleService.cancelLike(id, ss.getLogonMemberId());
+				System.out.printf("* %d번 게시글 %s을 해제하였습니다.\n", id, msg);
+			} else {
+				System.out.printf("* 잘못 입력하였습니다.(0 ~ 3 입력가능)\n");
+				continue;
+			}
+		}
 	}
 }
