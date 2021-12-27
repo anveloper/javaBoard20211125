@@ -241,6 +241,8 @@ public class ArticleController extends Controller {
 			System.out.printf("* %d번 게시글이 존재하지 않습니다.\n", id);
 			return;
 		}
+		
+		// 추천/비추천 기능 구문
 		System.out.printf("* 게시글 [추천] 1, [비추천] 2, [선택 해제] 3, [나기기] 0\n");
 
 		while (true) {
