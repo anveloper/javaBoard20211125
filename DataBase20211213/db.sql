@@ -69,6 +69,7 @@ ON a.memberId = m.id
 WHERE a.title LIKE '%새%'
 ORDER BY a.id DESC;
 
+##일정 수의 게시글 목록만 추출하기 위한 구문
 SELECT a.*, m.name AS extra_writer
 FROM article AS a
 LEFT JOIN `member` AS m
@@ -88,7 +89,21 @@ CREATE TABLE `like`(
     updateDate DATETIME NOT NULL,
     articleId INT(10) UNSIGNED NOT NULL,
     memberId INT(10) UNSIGNED NOT NULL,
-    liketype TINYINT(1) NOT NULL
+    likeType TINYINT(1) NOT NULL
 ); ## liketype type 1은 추천, type 2는 비추천
+
+DROP TABLE `like`;
 DESC `like`;
-    
+SELECT * FROM `like`;
+SELECT * FROM article;
+
+## likeCheckCnt
+SELECT COUNT(*) FROM `like`
+WHERE articleId = 33 AND memberId = 2;
+
+## likeCheck CASE문 연습
+SELECT 
+CASE WHEN COUNT(*) != 0
+THEN likeType ELSE 0 END
+FROM `like`
+WHERE articleId = 30 AND memberId = 2;
