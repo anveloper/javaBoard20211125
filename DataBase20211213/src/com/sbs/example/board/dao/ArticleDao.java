@@ -187,4 +187,13 @@ public class ArticleDao {
 
 		DBUtil.delete(conn, sql);
 	}
+
+	public int getLikeVal(int id, int likeType) {
+		SecSql sql = new SecSql();
+		
+		sql.append("SELECT COUNT(*) FROM `like`");
+		sql.append("WHERE articleId = ? AND likeType = ?2", id, likeType);
+		
+		return DBUtil.selectRowIntValue(conn, sql);
+	}
 }

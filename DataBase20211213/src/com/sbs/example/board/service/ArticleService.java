@@ -66,13 +66,17 @@ public class ArticleService {
 	public int likeCheck(int id, int logonMemberId) {
 		return articleDao.likeCheck(id, logonMemberId);
 	}
-	
+
 	public void updateLike(int id, int likeType, int logonMemberId) {
 		articleDao.updateLike(id, likeType, logonMemberId);
 	}
 
 	public void cancelLike(int id, int logonMemberId) {
 		articleDao.cancelLike(id, logonMemberId);
+	}
+
+	public int getLikeVal(int id, int likeType) {
+		return articleDao.getLikeVal(id, likeType);
 	}
 
 }

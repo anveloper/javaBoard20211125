@@ -89,13 +89,17 @@ public class ArticleController extends Controller {
 				return;
 			}
 
-			System.out.printf("번호 | 등록날짜            | 수정날짜            | 제목			| 작성자	| 조회수\n");
+			System.out.printf("번호 | 등록날짜            | 수정날짜            | 제목			| 작성자	| 조회수 | 추/비\n");
 			System.out.println(
 					"=========================================================================================================");
 			for (Article article : articles) {
-				System.out.printf("%-4d | %-19s | %-19s | %-14s	| %s		| %d \n", article.getId(),
+
+				int likeVal = articleService.getLikeVal(article.getId(), 1);
+				int dislikeVal = articleService.getLikeVal(article.getId(), 2);
+
+				System.out.printf("%-4d | %-19s | %-19s | %-14s	| %s		| %-6d | %d / %d \n", article.getId(),
 						article.getRegDate(), article.getUpdateDate(), article.getTitle(), article.getExtra_writer(),
-						article.getHit());
+						article.getHit(), likeVal, dislikeVal);
 			}
 			System.out.println(
 					"=========================================================================================================");
@@ -107,7 +111,6 @@ public class ArticleController extends Controller {
 			System.out.printf("					          [현재 페이지 : %-2d, 마지막 페이지 : %-2d, 전체글 수 : %-3d]\n", page,
 					lastPage, articlesCnt);
 			System.out.printf("* 이동하려는 page 입력, 종료 시 0 이하 입력\n");
-
 			while (true) {
 				System.out.printf("[article list] > 명령어 : ");
 				page = sc.nextInt();
@@ -142,12 +145,17 @@ public class ArticleController extends Controller {
 
 		Article article = articleService.getArticleById(id);
 
+		int likeVal = articleService.getLikeVal(id, 1);
+		int dislikeVal = articleService.getLikeVal(id, 2);
+
 		System.out.printf("* 게시글 상세보기===============================================================\n");
 		System.out.printf("* 게시글 번호 : %d				작성자 : %s\n", article.getId(), article.getExtra_writer());
 		System.out.printf("* 등록일자 : %s		갱신일자 : %s\n", article.getRegDate(), article.getUpdateDate());
 		System.out.printf("* 제목 : %s\n", article.getTitle());
 		System.out.printf("* 내용 =========================================================================\n");
-		System.out.printf("| >> %s \n| \n| \n* \n", article.getBody());
+		System.out.printf(
+				"| >> %s \n| \n| \n* ======================================================== 추천 : %-3d 비추천 : %-3d\n",
+				article.getBody(), likeVal, dislikeVal);
 	}
 
 	private void doModify() {
@@ -241,13 +249,14 @@ public class ArticleController extends Controller {
 			System.out.printf("* %d번 게시글이 존재하지 않습니다.\n", id);
 			return;
 		}
-		
+
 		// 추천/비추천 기능 구문
 		System.out.printf("* 게시글 [추천] 1, [비추천] 2, [선택 해제] 3, [나기기] 0\n");
 
 		while (true) {
 			System.out.printf("[article like] > 명령어 : ");
-			int likeType = Integer.parseInt(sc.nextLine());
+			int likeType = sc.nextInt();
+			sc.nextLine();
 
 			if (likeType == 0) {
 				System.out.printf("* [article like] 종료\n");
@@ -255,11 +264,11 @@ public class ArticleController extends Controller {
 			}
 
 			int likeCheck = articleService.likeCheck(id, ss.getLogonMemberId());
-			
+
 			String msg = (likeType == 1 ? "추천" : "비추천");
-			
+
 			if (likeType == 1 || likeType == 2) {
-				
+
 				if (likeCheck > 0) {
 					if (likeCheck == likeType) {
 						System.out.printf("* 이미 %s한 게시글입니다.\n", msg);
