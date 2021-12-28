@@ -1,6 +1,7 @@
 package com.sbs.example.board.controller;
 
 import java.sql.Connection;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -33,6 +34,8 @@ public class ArticleController extends Controller {
 			doDelete();
 		} else if (cmd.startsWith("article like ")) {
 			doLike();
+		} else if (cmd.startsWith("article comment ")) {
+			doComment();
 		} else {
 			System.out.printf("* 존재하지 않는 명령어입니다.\n");
 		}
@@ -70,8 +73,10 @@ public class ArticleController extends Controller {
 
 		while (true) {
 
-			if (page == 0)
+			if (page == 0) {
+				System.out.printf("* [article list] 종료\n");
 				break;
+			}
 
 			if (cmdBits.length < 3) {
 				if (cmd.length() != 12) { // 띄어 쓰기를 안하는 경우
@@ -294,4 +299,108 @@ public class ArticleController extends Controller {
 			}
 		}
 	}
+
+	private void doComment() {
+		if (ss.isLogon() == false) { // 나중에 함수화
+			System.out.printf("* 로그인 상태가 아닙니다. 로그인 후 이용해 주세요.\n");
+			return;
+		}
+
+		int id = Integer.parseInt(cmd.split(" ")[2].trim());
+
+		boolean isInt = cmd.split(" ")[2].matches("-?\\d+");
+		if (!isInt) {
+			System.out.println("* 게시글의 ID를 숫자로 입력해주세요.\n");
+			return;
+		}
+
+		int articleCount = articleService.getArticleCntById(id);
+
+		if (articleCount == 0) {
+			System.out.printf("* %d번 게시글이 존재하지 않습니다.\n", id);
+			return;
+		}
+
+		// 댓글 달기 구성
+		System.out.printf("* %d번 게시글 댓글 목록\n", id);
+
+		int commentType = 0;
+		int commentId = 0;
+		
+		while (true) {
+			System.out.printf("* 댓글 [작성] 1, [수정] 2, [삭제] 3, [이동] 4, [나기기] 0\n");
+			while (true) {
+				try {
+					System.out.printf("[article comment] > 명령어 : ");
+					Scanner sc2 = new Scanner(System.in);
+					commentType = sc2.nextInt();
+					sc2.nextLine();
+					
+					break;
+				} catch (InputMismatchException e) {
+					System.out.printf("* 정상적인 숫자를 입력해주세요.\n");
+				}
+			}
+
+			if (commentType == 0) {
+				System.out.printf("* [article comment] 종료\n");
+				break;
+			}
+			
+			if (commentType == 1) {
+				System.out.printf("* [article comment] 작성\n");
+				System.out.printf("* [article comment] 제목 : ");
+				String title = sc.nextLine();
+				System.out.printf("* [article comment] 내용 : ");
+				String body = sc.nextLine();
+
+				commentId = articleService.doWriteComment(id, title, body, ss.getLogonMemberId());
+				System.out.printf("* %d댓글(%d번 게시글)이 작성되었습니다.\n", commentId, id);
+
+			} else if (commentType == 2) {
+				System.out.printf("* [article comment] 수정 할 댓글 번호 : \n");
+				String commentCmd = sc.nextLine();
+				
+				isInt = commentCmd.matches("-?\\d+");
+				if (!isInt) {
+					System.out.println("* 댓글의 ID를 숫자로 입력해주세요.\n");
+					continue;
+				}
+				
+				commentId = Integer.parseInt(commentCmd); 
+				int commentCnt = articleService.getCommentCnt(commentId);
+				if(commentCnt < 1) {
+					System.out.printf("* %d번 댓글이 존재하지 않습니다.\n");
+					continue;
+				}
+				
+				if(ss.getLogonMemberId() != articleService.getCommentMemberIdById(commentId) ) {
+					System.out.printf("* 댓글 작성자만 수정할 수 있습니다.\n");
+					continue;
+				}
+				System.out.printf("* [article comment] %d번 댓글 수정\n", commentId);
+				System.out.printf("* [article comment] 새 댓글 제목 : ");
+				String title = sc.nextLine();
+				System.out.printf("* [article comment] 새 댓글 내용 : ");
+				String body = sc.nextLine();
+				
+				commentId = articleService.doModifyComment(commentId, title, body);
+				System.out.printf("* %d댓글(%d번 게시글)이 수정되었습니다.\n", commentId, id);
+
+				
+			} else if (commentType == 3) {
+				System.out.printf("* [article comment] 삭제\n");
+				
+				
+			} else if (commentType == 4) {
+				System.out.printf("* [article comment] 이동 : \n");
+				
+				
+			} else {
+				System.out.printf("* 0 ~ 4 숫자만 사용 가능\n");
+			}
+		}
+		
+	}
+
 }

@@ -196,4 +196,49 @@ public class ArticleDao {
 		
 		return DBUtil.selectRowIntValue(conn, sql);
 	}
+
+	public int doWriteComment(int id, String title, String body, int logonMemberId) {
+		SecSql sql = new SecSql();
+
+		sql.append("INSERT INTO `comment`");
+		sql.append("SET regDate = NOW()");
+		sql.append(", updateDate = NOW()");
+		sql.append(", articleid = ?",id);
+		sql.append(", memberId = ?", logonMemberId);
+		sql.append(", title = ?", title);
+		sql.append(", body = ?", body);
+
+		return DBUtil.insert(conn, sql);
+	}
+
+	public int getCommentCnt(int commentId) {
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT COUNT(*)");
+		sql.append("FROM `comment`");
+		sql.append("WHERE id = ?", commentId);
+		
+		return DBUtil.selectRowIntValue(conn, sql);
+	}
+
+	public int getCommentMemberIdById(int commentId) {
+		SecSql sql = new SecSql();
+		
+		sql.append("SELECT memberId FROM `comment`");
+		sql.append("WHERE id = ?", commentId);
+		
+		return DBUtil.selectRowIntValue(conn, sql);
+	}
+
+	public int doModifyComment(int commentId, String title, String body) {
+		
+		
+		
+		
+		
+		// 여기 수정부터 시작하면 됨
+		
+		
+		return 0;
+	}
 }

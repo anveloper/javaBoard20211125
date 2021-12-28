@@ -91,6 +91,35 @@ CREATE TABLE `like`(
     memberId INT(10) UNSIGNED NOT NULL,
     likeType TINYINT(1) NOT NULL
 ); ## liketype type 1은 추천, type 2는 비추천
+
 DROP TABLE `like`;
 DESC `like`;
-    
+SELECT * FROM `like`;
+SELECT * FROM article;
+
+## likeCheckCnt
+SELECT COUNT(*) FROM `like`
+WHERE articleId = 33 AND memberId = 2;
+
+## likeCheck CASE문 연습
+SELECT 
+CASE WHEN COUNT(*) != 0
+THEN likeType ELSE 0 END
+FROM `like`
+WHERE articleId = 30 AND memberId = 2;
+
+## like count
+SELECT COUNT(*) FROM `like`
+WHERE articleId = 32 AND likeType = 2;
+
+## comment 기능 부
+
+CREATE TABLE `comment`(
+    id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY(id),
+    regDate DATETIME NOT NULL,
+    updateDate DATETIME NOT NULL,
+    articleId INT(10) UNSIGNED NOT NULL,
+    memberId INT(10) UNSIGNED NOT NULL,
+    `body` TEXT NOT NULL
+);

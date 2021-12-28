@@ -107,3 +107,8 @@ CASE WHEN COUNT(*) != 0
 THEN likeType ELSE 0 END
 FROM `like`
 WHERE articleId = 30 AND memberId = 2;
+
+## like count
+SELECT COUNT(*) FROM `like`
+WHERE articleId = 32 AND likeType = 2;
+
