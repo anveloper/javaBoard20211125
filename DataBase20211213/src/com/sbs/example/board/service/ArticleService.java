@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.sbs.example.board.dao.ArticleDao;
 import com.sbs.example.board.dto.Article;
+import com.sbs.example.board.dto.Comment;
 
 public class ArticleService {
 	ArticleDao articleDao;
@@ -91,8 +92,31 @@ public class ArticleService {
 		return articleDao.getCommentMemberIdById(commentId);
 	}
 
-	public int doModifyComment(int commentId, String title, String body) {
-		return articleDao.doModifyComment(commentId, title, body);
+	public void doModifyComment(int commentId, String title, String body) {
+		articleDao.doModifyComment(commentId, title, body);
+	}
+
+	public boolean isMatchArticleIdtoCommentId(int id, int commentId) {
+		return articleDao.isMatchArticleIdtoCommentId(id, commentId);
+	}
+
+	public List<Comment> getComments(int id) {
+		return articleDao.getComments(id);
+	}
+
+	public void doDeleteComment(int commentId) {
+		articleDao.doDeleteComment(commentId);
+	}
+
+	public int getCommentsCnt(int id) {
+		return articleDao.getCommentsCnt(id);
+	}
+
+	public List<Comment> getCommentsByPage(int id, int page, int itemInAPage) {
+		int limitFrom = (page - 1) * itemInAPage;
+		int limitTake = itemInAPage;
+
+		return articleDao.getCommentsByPage(id, limitFrom, limitTake);
 	}
 
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.sbs.example.board.dto.Article;
+import com.sbs.example.board.dto.Comment;
 import com.sbs.example.board.util.DBUtil;
 import com.sbs.example.board.util.SecSql;
 
@@ -190,10 +191,10 @@ public class ArticleDao {
 
 	public int getLikeVal(int id, int likeType) {
 		SecSql sql = new SecSql();
-		
+
 		sql.append("SELECT COUNT(*) FROM `like`");
 		sql.append("WHERE articleId = ? AND likeType = ?2", id, likeType);
-		
+
 		return DBUtil.selectRowIntValue(conn, sql);
 	}
 
@@ -203,7 +204,7 @@ public class ArticleDao {
 		sql.append("INSERT INTO `comment`");
 		sql.append("SET regDate = NOW()");
 		sql.append(", updateDate = NOW()");
-		sql.append(", articleid = ?",id);
+		sql.append(", articleid = ?", id);
 		sql.append(", memberId = ?", logonMemberId);
 		sql.append(", title = ?", title);
 		sql.append(", body = ?", body);
@@ -217,28 +218,95 @@ public class ArticleDao {
 		sql.append("SELECT COUNT(*)");
 		sql.append("FROM `comment`");
 		sql.append("WHERE id = ?", commentId);
-		
+
 		return DBUtil.selectRowIntValue(conn, sql);
 	}
 
 	public int getCommentMemberIdById(int commentId) {
 		SecSql sql = new SecSql();
-		
+
 		sql.append("SELECT memberId FROM `comment`");
 		sql.append("WHERE id = ?", commentId);
+
+		return DBUtil.selectRowIntValue(conn, sql);
+	}
+
+	public void doModifyComment(int commentId, String title, String body) {
+		SecSql sql = new SecSql();
+
+		sql.append("UPDATE `comment`");
+		sql.append("SET updateDate = NOW()");
+		sql.append(", title = ?", title);
+		sql.append(", `body` = ?", body);
+		sql.append("WHERE id = ?", commentId);
+
+		DBUtil.update(conn, sql);
+	}
+
+	public boolean isMatchArticleIdtoCommentId(int id, int commentId) {
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT COUNT(*) FROM `comment`");
+		sql.append("WHERE id = ? AND articleId = ?", commentId, id);
+
+		return !DBUtil.selectRowBooleanValue(conn, sql);// ?
+	}
+
+	public List<Comment> getComments(int id) {
+		List<Comment> comments = new ArrayList<>();
+		SecSql sql = new SecSql();
+
+		
+		sql.append("SELECT c.*, m.name AS extra_writer");
+		sql.append("FROM `comment` AS c");
+		sql.append("LEFT JOIN `member` AS m");
+		sql.append("ON c.memberId = m.id");
+		sql.append("WHERE c.articleId = ?", id);
+		sql.append("ORDER BY c.id DESC");
+
+		List<Map<String, Object>> commentListMap = DBUtil.selectRows(conn, sql);
+
+		for (Map<String, Object> commentMap : commentListMap) {
+			comments.add(new Comment(commentMap));
+		}
+		return comments;
+	}
+
+	public void doDeleteComment(int commentId) {
+		SecSql sql = new SecSql();
+
+		sql.append("DELETE FROM `comment`");
+		sql.append("WHERE id = ?", commentId);
+
+		DBUtil.delete(conn, sql);
+	}
+
+	public int getCommentsCnt(int id) {
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT COUNT(*) FROM `comment`");
+		sql.append("WHERE articleId = ?", id);
 		
 		return DBUtil.selectRowIntValue(conn, sql);
 	}
 
-	public int doModifyComment(int commentId, String title, String body) {
-		
-		
-		
-		
-		
-		// 여기 수정부터 시작하면 됨
-		
-		
-		return 0;
+	public List<Comment> getCommentsByPage(int id, int limitFrom, int limitTake) {
+		List<Comment> comments = new ArrayList<>();
+		SecSql sql = new SecSql();
+
+		sql.append("SELECT c.*, m.name AS extra_writer");
+		sql.append("FROM `comment` AS c");
+		sql.append("LEFT JOIN `member` AS m");
+		sql.append("ON c.memberId = m.id");
+		sql.append("WHERE c.articleId = ?", id);
+		sql.append("ORDER BY c.id DESC");
+		sql.append("LIMIT ?, ?", limitFrom, limitTake);
+
+		List<Map<String, Object>> commentListMap = DBUtil.selectRows(conn, sql);
+
+		for (Map<String, Object> commentMap : commentListMap) {
+			comments.add(new Comment(commentMap));
+		}
+		return comments;
 	}
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.sbs.example.board.dto.Article;
+import com.sbs.example.board.dto.Comment;
 import com.sbs.example.board.service.ArticleService;
 import com.sbs.example.board.session.Session;
 
@@ -51,9 +52,9 @@ public class ArticleController extends Controller {
 		}
 
 		System.out.printf("* 게시글 작성 \n");
-		System.out.printf("* 제목 : ");
+		System.out.printf("> 제목 : ");
 		title = sc.nextLine();
-		System.out.printf("* 내용 : ");
+		System.out.printf("> 내용 : ");
 		body = sc.nextLine();
 
 		int id = articleService.doWrite(title, body, ss.getLogonMemberId());
@@ -161,6 +162,25 @@ public class ArticleController extends Controller {
 		System.out.printf(
 				"| >> %s \n| \n| \n* ======================================================== 추천 : %-3d 비추천 : %-3d\n",
 				article.getBody(), likeVal, dislikeVal);
+		while (true) {
+			System.out.printf("* 댓글(%-2d)					       [댓글 보기] 1, [나가기] 0 \n", articleService.getCommentsCnt(id));
+			System.out.printf("[article detail] > 명령어 : ");
+			int detailCmd = sc.nextInt();
+			sc.nextLine();
+			if (detailCmd == 1) {
+				if (!ss.isLogon()) {
+					System.out.printf("* 로그인 후 이용가능합니다.\n");
+					break;
+				}
+				doComment();
+			} else if (detailCmd == 0) {
+				System.out.printf("* [article detail] 종료\n");
+				break;
+			} else {
+				System.out.printf("* 잘못 입력하였습니다.\n");
+			}
+
+		}
 	}
 
 	private void doModify() {
@@ -193,9 +213,9 @@ public class ArticleController extends Controller {
 		String body;
 
 		System.out.printf("* 게시글 수정\n");
-		System.out.printf("* 새 제목 : ");
+		System.out.printf("> 새 제목 : ");
 		title = sc.nextLine();
-		System.out.printf("* 새 내용 : ");
+		System.out.printf("> 새 내용 : ");
 		body = sc.nextLine();
 
 		articleService.doModify(title, body, id);
@@ -322,12 +342,42 @@ public class ArticleController extends Controller {
 		}
 
 		// 댓글 달기 구성
-		System.out.printf("* %d번 게시글 댓글 목록\n", id);
 
 		int commentType = 0;
 		int commentId = 0;
-		
+
+		int page = 1;
+		int itemInAPage = 5;
+		List<Comment> comments = null;
+
 		while (true) {
+
+			System.out.printf("* %d번 게시글 댓글 목록\n", id);
+
+			comments = articleService.getCommentsByPage(id, page, itemInAPage);
+
+			if (comments.size() == 0) {
+				System.out.printf("* 표시할 글이 없습니다.\n");
+				return;
+			}
+
+			System.out.printf("번호 | 등록날짜            | 수정날짜            | 제목			| 내용			| 작성자 \n");
+			System.out.println(
+					"=========================================================================================================");
+			for (Comment comment : comments) {
+
+				System.out.printf("%-4d | %-19s | %-19s | %-14s	| %-14s	| %s \n", comment.getId(), comment.getRegDate(),
+						comment.getUpdateDate(), comment.getTitle(), comment.getBody(), comment.getExtra_writer());
+			}
+			System.out.println(
+					"=========================================================================================================");
+
+			int commentsCnt = articleService.getCommentsCnt(id);
+			int lastPage = (int) Math.ceil(commentsCnt / (double) itemInAPage);
+
+			System.out.printf("					          [현재 페이지 : %-2d, 마지막 페이지 : %-2d, 전체글 수 : %-3d]\n", page,
+					lastPage, commentsCnt);
+
 			System.out.printf("* 댓글 [작성] 1, [수정] 2, [삭제] 3, [이동] 4, [나기기] 0\n");
 			while (true) {
 				try {
@@ -335,7 +385,7 @@ public class ArticleController extends Controller {
 					Scanner sc2 = new Scanner(System.in);
 					commentType = sc2.nextInt();
 					sc2.nextLine();
-					
+
 					break;
 				} catch (InputMismatchException e) {
 					System.out.printf("* 정상적인 숫자를 입력해주세요.\n");
@@ -346,61 +396,119 @@ public class ArticleController extends Controller {
 				System.out.printf("* [article comment] 종료\n");
 				break;
 			}
-			
+
 			if (commentType == 1) {
 				System.out.printf("* [article comment] 작성\n");
-				System.out.printf("* [article comment] 제목 : ");
+				System.out.printf("[article comment] > 제목 : ");
 				String title = sc.nextLine();
-				System.out.printf("* [article comment] 내용 : ");
+				System.out.printf("[article comment] > 내용 : ");
 				String body = sc.nextLine();
 
 				commentId = articleService.doWriteComment(id, title, body, ss.getLogonMemberId());
-				System.out.printf("* %d댓글(%d번 게시글)이 작성되었습니다.\n", commentId, id);
+				System.out.printf("* %d번 댓글(%d번 게시글)이 작성되었습니다.\n", commentId, id);
 
 			} else if (commentType == 2) {
-				System.out.printf("* [article comment] 수정 할 댓글 번호 : \n");
+				comments = articleService.getComments(id);
+				System.out.printf("* %d번 게시글의 댓글 전체 목록\n", id);
+				System.out.printf("번호 | 등록날짜            | 수정날짜            | 제목			| 내용			| 작성자 \n");
+				System.out.println(
+						"=========================================================================================================");
+				for (Comment comment : comments) {
+
+					System.out.printf("%-4d | %-19s | %-19s | %-14s	| %-14s	| %s \n", comment.getId(),
+							comment.getRegDate(), comment.getUpdateDate(), comment.getTitle(), comment.getBody(),
+							comment.getExtra_writer());
+				}
+				System.out.println(
+						"=========================================================================================================");
+
+				System.out.printf("[article comment] > 수정 할 댓글 번호 : ");
 				String commentCmd = sc.nextLine();
-				
+
 				isInt = commentCmd.matches("-?\\d+");
 				if (!isInt) {
-					System.out.println("* 댓글의 ID를 숫자로 입력해주세요.\n");
+					System.out.println("* 댓글의 번호를 숫자로 입력해주세요.\n");
 					continue;
 				}
-				
-				commentId = Integer.parseInt(commentCmd); 
+
+				commentId = Integer.parseInt(commentCmd);
 				int commentCnt = articleService.getCommentCnt(commentId);
-				if(commentCnt < 1) {
+				if (commentCnt < 1) {
 					System.out.printf("* %d번 댓글이 존재하지 않습니다.\n");
 					continue;
 				}
-				
-				if(ss.getLogonMemberId() != articleService.getCommentMemberIdById(commentId) ) {
+
+				if (articleService.isMatchArticleIdtoCommentId(id, commentId)) {
+					System.out.printf("* %d번 댓글은 %d번 게시글에 포함된 댓글이 아닙니다.\n", commentId, id);
+					continue;
+				}
+
+				if (ss.getLogonMemberId() != articleService.getCommentMemberIdById(commentId)) {
 					System.out.printf("* 댓글 작성자만 수정할 수 있습니다.\n");
 					continue;
 				}
-				System.out.printf("* [article comment] %d번 댓글 수정\n", commentId);
-				System.out.printf("* [article comment] 새 댓글 제목 : ");
-				String title = sc.nextLine();
-				System.out.printf("* [article comment] 새 댓글 내용 : ");
-				String body = sc.nextLine();
-				
-				commentId = articleService.doModifyComment(commentId, title, body);
-				System.out.printf("* %d댓글(%d번 게시글)이 수정되었습니다.\n", commentId, id);
 
-				
+				System.out.printf("* [article comment] %d번 댓글 수정\n", commentId);
+				System.out.printf("[article comment] > 새 댓글 제목 : ");
+				String title = sc.nextLine();
+				System.out.printf("[article comment] > 새 댓글 내용 : ");
+				String body = sc.nextLine();
+
+				articleService.doModifyComment(commentId, title, body);
+				System.out.printf("* %d번 댓글(%d번 게시글)이 수정되었습니다.\n", commentId, id);
+
 			} else if (commentType == 3) {
-				System.out.printf("* [article comment] 삭제\n");
-				
-				
+				System.out.printf("[article comment] > 삭제 할 댓글 번호 : ");
+				String commentCmd = sc.nextLine();
+
+				isInt = commentCmd.matches("-?\\d+");
+				if (!isInt) {
+					System.out.println("* 댓글의 번호를 숫자로 입력해주세요.\n");
+					continue;
+				}
+
+				commentId = Integer.parseInt(commentCmd);
+				int commentCnt = articleService.getCommentCnt(commentId);
+				if (commentCnt < 1) {
+					System.out.printf("* %d번 댓글이 존재하지 않습니다.\n");
+					continue;
+				}
+
+				if (articleService.isMatchArticleIdtoCommentId(id, commentId)) {
+					System.out.printf("* %d번 댓글은 %d번 게시글에 포함된 댓글이 아닙니다.\n", commentId, id);
+					continue;
+				}
+
+				if (ss.getLogonMemberId() != articleService.getCommentMemberIdById(commentId)) {
+					System.out.printf("* 댓글 작성자만 삭제할 수 있습니다.\n");
+					continue;
+				}
+
+				articleService.doDeleteComment(commentId);
+
+				System.out.printf("* %d번 댓글이 삭제되었습니다.\n", commentId);
+
 			} else if (commentType == 4) {
-				System.out.printf("* [article comment] 이동 : \n");
-				
-				
+
+				while (true) {
+					System.out.printf("[article comment (이동)] > 페이지 : ");
+					page = sc.nextInt();
+					sc.nextLine(); // 버퍼 회수
+					if (page > lastPage) {
+						System.out.printf("* 없는 페이지 입니다.\n");
+						continue;
+					}
+					if (page <= 0) {
+						return;
+					}
+					break;
+				}
+
 			} else {
 				System.out.printf("* 0 ~ 4 숫자만 사용 가능\n");
 			}
 		}
-		
+
 	}
 
 }
