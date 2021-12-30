@@ -95,7 +95,7 @@ public class ArticleController extends Controller {
 				return;
 			}
 
-			System.out.printf("번호 | 등록날짜            | 수정날짜            | 제목			| 작성자	| 조회수 | 추/비\n");
+			System.out.printf("번호 | 등록날짜            | 수정날짜            | 제목			| 작성자 | 댓글 | 조회수 | 추/비 \n");
 			System.out.println(
 					"=========================================================================================================");
 			for (Article article : articles) {
@@ -103,9 +103,9 @@ public class ArticleController extends Controller {
 				int likeVal = articleService.getLikeVal(article.getId(), 1);
 				int dislikeVal = articleService.getLikeVal(article.getId(), 2);
 
-				System.out.printf("%-4d | %-19s | %-19s | %-14s	| %s		| %-6d | %d / %d \n", article.getId(),
+				System.out.printf("%-4d | %-19s | %-19s | %-14s	| %-6s | %-4d | %-6d | %d / %d \n", article.getId(),
 						article.getRegDate(), article.getUpdateDate(), article.getTitle(), article.getExtra_writer(),
-						article.getHit(), likeVal, dislikeVal);
+						articleService.getCommentsCnt(article.getId()), article.getHit(), likeVal, dislikeVal);
 			}
 			System.out.println(
 					"=========================================================================================================");
@@ -163,7 +163,8 @@ public class ArticleController extends Controller {
 				"| >> %s \n| \n| \n* ======================================================== 추천 : %-3d 비추천 : %-3d\n",
 				article.getBody(), likeVal, dislikeVal);
 		while (true) {
-			System.out.printf("* 댓글(%-2d)					       [댓글 보기] 1, [나가기] 0 \n", articleService.getCommentsCnt(id));
+			System.out.printf("* 댓글(%-2d)					       [댓글 보기] 1, [나가기] 0 \n",
+					articleService.getCommentsCnt(id));
 			System.out.printf("[article detail] > 명령어 : ");
 			int detailCmd = sc.nextInt();
 			sc.nextLine();

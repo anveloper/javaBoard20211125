@@ -37,7 +37,7 @@ SET regDate = NOW(), updateDate = NOW(),
 loginId = 'admin', loginPw = 'admin', `name` = 'admin';
 
 UPDATE article 
-SET regDate = regDate, updateDate = NOW(), title = "수정확인", `body`="수정확인"
+SET updateDate = NOW(), title = "수정확인", `body`="수정확인"
 WHERE id = 2;
 
 SELECT * FROM article;
@@ -129,3 +129,61 @@ desc `comment`;
 
 select memberId from `comment`
 where id = 1;
+
+select * from `comment`;
+
+## 댓글 수정
+update `comment`
+set updateDate = NOW(),
+title = "새로운 제목",
+`body` = "새로운 내용"
+where id = 2;
+
+select count(*) from `comment`
+where id = 1 and articleId = 32;
+
+select * from article;
+
+## 수정부에 페이징 없이 전체 리스트 출력
+SELECT c.*, m.name AS extra_writer
+FROM `comment` AS c
+LEFT JOIN `member` AS m
+ON c.memberId = m.id
+WHERE c.articleId = 32
+ORDER BY c.id DESC;
+
+##댓글 수 계산
+select count(*) from `comment`
+where articleId = 32;
+
+## 댓글 페이징
+select c.*, m.name as extra_writer
+from `comment` as c
+left join `member` as m
+on c.memberId = m.id
+where c.articleId = 32
+order by c.id desc
+limit 0, 5;
+
+insert into `comment`
+set regDate = now(), updateDate = NOW(),
+articleID = 32, memberId = 2,
+title = '페이징1', `body` = '페이징1';
+
+INSERT INTO `comment`
+SET regDate = NOW(), updateDate = NOW(),
+articleID = 32, memberId = 2,
+title = '페이징2', `body` = '페이징2';
+
+INSERT INTO `comment`
+SET regDate = NOW(), updateDate = NOW(),
+articleID = 32, memberId = 2,
+title = '페이징3', `body` = '페이징3';
+
+INSERT INTO `comment`
+SET regDate = NOW(), updateDate = NOW(),
+articleID = 32, memberId = 2,
+title = '페이징4', `body` = '페이징4';
+
+select * from `comment`
+where articleId = 32;
