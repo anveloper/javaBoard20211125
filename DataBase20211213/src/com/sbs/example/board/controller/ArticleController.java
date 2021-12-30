@@ -116,13 +116,30 @@ public class ArticleController extends Controller {
 
 			System.out.printf("					          [현재 페이지 : %-2d, 마지막 페이지 : %-2d, 전체글 수 : %-3d]\n", page,
 					lastPage, articlesCnt);
-			System.out.printf("* 이동하려는 page 입력, 종료 시 0 이하 입력\n");
+			System.out.printf("* 이동하려는 page 입력, list 종료 시 0 이하 입력, [detail (번호)] : 게시글 확인\n");
+			String listCmd = "";
 			while (true) {
 				System.out.printf("[article list] > 명령어 : ");
-				page = sc.nextInt();
-				sc.nextLine(); // 버퍼 회수
-				if (page > lastPage) {
-					System.out.printf("* 없는 페이지 입니다.\n");
+				listCmd = sc.nextLine();
+				
+				if (listCmd.matches("[+-]?\\d*(\\.\\d+)?")) {
+					page = Integer.parseInt(listCmd);
+					if (page > lastPage) {
+						System.out.printf("* 없는 페이지 입니다.\n");
+						continue;
+					}
+				} else if(listCmd.startsWith("detail ")){
+					
+					if(!listCmd.split(" ")[1].matches("[+-]?\\d*(\\.\\d+)?")) {
+						System.out.printf("* 게시글 번호를 숫자로 입력해주세요.\n");
+						continue;
+					}
+					String cmdCopy = cmd;
+					cmd = "article " + listCmd; 
+					showDetail(); // list에서도 detail에 바로 접근이 가능하도록하면 함수가 너무 중첩된다..
+					cmd = cmdCopy; // detail 참조했다가 다시 반환, 회귀
+				} else {
+					System.out.printf("* 잘못된 입력입니다.\n");
 					continue;
 				}
 				break;
@@ -498,18 +515,14 @@ public class ArticleController extends Controller {
 					if (page > lastPage) {
 						System.out.printf("* 없는 페이지 입니다.\n");
 						continue;
-					}
-					if (page <= 0) {
+					} else if (page <= 0) {
 						return;
 					}
 					break;
 				}
-
 			} else {
 				System.out.printf("* 0 ~ 4 숫자만 사용 가능\n");
 			}
 		}
-
 	}
-
 }
